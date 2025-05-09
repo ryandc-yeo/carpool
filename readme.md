@@ -21,7 +21,7 @@ cd client && npm i && cd ../server && npm i && cd ..
 You should create two terminals:
 
 1. In the `/client` directory run `npx expo start`. You can choose to scan the QR code with the Expo Go app on your phone, but I'd recommend using a simulator from XCode or Android Studio.
-2. In the `/server` directory run `node server.js`.
+2. In the `/server` directory run `node server.ts`.
 
 ## Tech Stack
 
