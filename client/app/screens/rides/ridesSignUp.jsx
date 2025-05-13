@@ -1,31 +1,115 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
-import React from "react";
-import { useState } from "react";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+import React, { useState } from "react";
+import Checkbox from 'expo-checkbox';
 
 const RidesSignUp = () => {
-    const [isChecked, setChecked] = useState(false);
+    const roleOptions = ["Passenger", "Driver"];
+    const fridayOptions = ["Early (5pm)", "Regular (6:30pm"]
+    const sundayOptions = ["Early (8am)", "Regular (10:45am)"]
+    const fellyOptions = ["Yes", "No, go back early"]
+
+    const [role, setrole] = useState("");
+    const [friday, setFriday] = useState("");
+    const [sunday, setSunday] = useState("");
+    const [felly, setFelly] = useState("");
+    const [isNewcomer, setisNewcomer] = useState(false);
+
 
     return (
 
         <View style={styles.container}>
-            <Text>Ride Signup</Text>
-            <Text>Are you a...</Text>
-            <Text>If you are a driver, how many people can you drive (excluding you?) </Text>
-            <TextInput
-                styles={styles.input}
-                placeholder="Insert Text"
-            />
-            <Text>Select which days you want a ride:</Text>
+            <Text style={styles.title}>Rides Signup</Text>
+
+            <Text style={styles.subtitle}>Are you a...</Text>
+            {roleOptions.map((r) => (
+                <View key={r} style={styles.radioRow}>
+                    <Pressable
+                        style={[
+                          styles.radioButtonOuter,
+                          role === r && styles.radioButtonOuterSelected,
+                        ]}
+                        onPress={() => setGrade(g)}
+                    >
+                        {role === r && <View style={styles.radioButtonInner} />}
+                    </Pressable>
+                    <Text style={styles.radioText}>{r}</Text>
+                </View>
+            ))}
+
+            <Text style={styles.subtitle}>If you are a driver, how many people can you drive (excluding you?) </Text>
+            <TextInput placeholder="Input here" style={styles.input} />
             
-            <Text>Stay for lunch or go back immediately?</Text>
 
-            <Text>Please check this box if you are a newcomer!</Text>
+            <Text style={styles.subtitle}>Select which days you want a ride:</Text>
+            <View style={styles.horizontalGroup}>
+                <View>
+                    <Text>Friday</Text>
+                    {fridayOptions.map((f) => (
+                        <View key={f} style={styles.radioRow}>
+                            <Pressable
+                                style={[
+                                styles.radioButtonOuter,
+                                friday === f && styles.radioButtonOuterSelected,
+                                ]}
+                                onPress={() => setGrade(g)}
+                            >
+                                {friday === f && <View style={styles.radioButtonInner} />}
+                            </Pressable>
+                            <Text style={styles.radioText}>{f}</Text>
+                        </View>
+                    ))}
+                </View>
 
-            <Text>Questions, comments, or concerns?</Text>
-            <TextInput
-                //styles={styles.input}
-                placeholder="Insert Text"
-            />
+                <View>
+                    <Text>Sunday</Text>
+                    {sundayOptions.map((s) => (
+                        <View key={s} style={styles.radioRow}>
+                            <Pressable
+                                style={[
+                                styles.radioButtonOuter,
+                                sunday === s && styles.radioButtonOuterSelected,
+                                ]}
+                                onPress={() => setGrade(g)}
+                            >
+                                {sunday === s && <View style={styles.radioButtonInner} />}
+                            </Pressable>
+                            <Text style={styles.radioText}>{s}</Text>
+                        </View>
+                    ))}
+                </View>
+
+            </View>
+
+            
+            
+            <Text style={styles.subtitle}>Stay for lunch or go back immediately?</Text>
+
+            {fellyOptions.map((f) => (
+                <View key={f} style={styles.radioRow}>
+                    <Pressable
+                        style={[
+                          styles.radioButtonOuter,
+                          felly === f && styles.radioButtonOuterSelected,
+                        ]}
+                        onPress={() => setGrade(g)}
+                    >
+                        {felly === f && <View style={styles.radioButtonInner} />}
+                    </Pressable>
+                    <Text style={styles.radioText}>{f}</Text>
+                </View>
+            ))}
+
+            <Text style={styles.subtitle}>Please check this box if you are a newcomer!</Text>
+            <View style={styles.section}>
+                <View style = {styles.horizontalGroup}>
+                    <Checkbox style={styles.checkbox} value={isNewcomer} onValueChange={setisNewcomer} />
+                    <Text style={styles.paragraph}>I am a newcomer!</Text>
+                </View>
+            </View>
+
+            <Text style={styles.subtitle}>Questions, comments, or concerns?</Text>
+            <TextInput placeholder="Input here" style={styles.input} />
+
 
         </View>
     )
@@ -34,10 +118,62 @@ const RidesSignUp = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'top',
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
         padding: 20,
-    }
+      },
+    horizontalGroup: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap:15
+      },
+      title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 10,
+      },
+      subtitle: {
+        fontSize: 18,
+        marginBottom: 10, 
+        marginTop: 10,
+    },
+      input: {
+        height: 40,
+        borderColor: "gray",
+        borderWidth: 1,
+        marginBottom: 20,
+        width: "80%",
+        paddingLeft: 10,
+      },
+      radioRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10,
+      },
+      radioText: {
+        marginLeft: 10,
+        fontSize: 16,
+      },
+      radioButtonOuter: {
+        height: 20,
+        width: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: "#999",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      radioButtonOuterSelected: {
+        borderColor: "#007AFF",
+      },
+      radioButtonInner: {
+        height: 10,
+        width: 10,
+        borderRadius: 5,
+        backgroundColor: "#007AFF",
+      },
+      
+
 });
 
 export default RidesSignUp;
