@@ -9,6 +9,7 @@ import Login from '../../screens/login/login';
 import RidesHome from '../../screens/rides/ridesHome';
 import RideDetails from '../../screens/rides/allRidesList';
 import RidesSignUp from '../../screens/rides/ridesSignUp';
+import Chat from '../../screens/chat/chat';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,6 +21,7 @@ const screens = [
   { name: 'Rides', component: RidesHome, icon: 'car'},
   { name: 'Ride Details', component: RideDetails, icon: 'car-sport'},
   { name: 'Rides SignUp', component: RidesSignUp, icon: 'car-sport'},
+  { name: 'Chat', component: Chat, icon: 'chatbubbles'}
 ];
 
 // creates the navigation
