@@ -10,8 +10,8 @@ import PhoneVerification from '../../screens/login/phoneVerification'
 import RidesHome from '../../screens/rides/ridesHome';
 import RideDetails from '../../screens/rides/allRidesList';
 import RidesSignUp from '../../screens/rides/ridesSignUp';
-import DriverHome from '../../screens/driver/driverHome';
-import PassengerHome from '../../screens/passenger/passengerHome';
+import DriverHome from '../../screens/rides/driverHome';
+import PassengerHome from '../../screens/rides/passengerHome';
 import Chat from '../../screens/chat/chat';
 
 const Drawer = createDrawerNavigator();

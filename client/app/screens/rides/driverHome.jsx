@@ -1,11 +1,18 @@
-import { View, Text, StyleSheet, Pressable} from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, Pressable, TextInput} from "react-native";
+import React, {useState} from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const DriverHome = () => {
+    const [hasTime, setHasTime] = useState(false);
+    const [time1, setTime1] = useState("");
+    const [time2, setTime2] = useState("");
+    const [time3, setTime3] = useState("");
+    const [time4, setTime4] = useState("");
     const navigation = useNavigation();
-    const handleSignUp = () => {
-        navigation.navigate("Rides SignUp");
+    const handleSetTime = () => {
+        if (time1 && time2 && time3 && time4) {
+            setHasTime(true);
+        }
     }
     const handleAllRides = () => {
         navigation.navigate("Ride Details");
@@ -13,18 +20,33 @@ const DriverHome = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Driver Home</Text>
-            <Text style={styles.text}>
-                Welcome to the rides home screen! Here you can sign up for rides and view all available rides.
-            </Text>
-            <Text style={styles.redText}>Deadline for Friday rides: Thursday at 10PM!</Text>
-            <Text style={styles.redText}>Deadline for Sunday rides: Friday at 10PM!</Text>
-            <Text style={styles.text}>Please make sure to sign up on time!</Text>
-            <Pressable style={styles.button} onPress={handleSignUp}>
-                <Text style={styles.buttonText}>Sign Up for a Ride</Text>
-            </Pressable>
+            <Text style={styles.text}>Thank you for being a driver!</Text>
             <Pressable style={styles.button} onPress={handleAllRides}>
                 <Text style={styles.buttonText}>View All Rides</Text>
             </Pressable>
+            <Text style={styles.text}>Set time for passengers</Text>
+            <Text>Passenger 1: </Text>
+            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime1(text)}/>
+            <Text>Passenger 2: </Text>
+            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime2(text)}/>
+            <Text>Passenger 3: </Text>
+            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime3(text)}/>
+            <Text>Passenger 4: </Text>
+            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime4(text)}/>
+            {hasTime ? (
+                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <Pressable style={styles.button}>
+                        <Text style={styles.buttonText}>Edit Time</Text>
+                    </Pressable>
+                    <Pressable style={styles.button} onPress={() => navigation.navigate("Chat")}>
+                        <Text style={styles.buttonText}>Open Chat</Text>
+                    </Pressable>
+                </View>
+            ) : (
+                <Pressable style={styles.button} onPress={handleSetTime}>
+                    <Text style={styles.buttonText}>Send Times</Text>
+                </Pressable>
+            )}
         </View>
     )
 }
@@ -46,21 +68,24 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: "#555",
     }, 
-    redText: {
-        fontSize: 16,
-        marginBottom: 10,
-        color: "red",
-        fontWeight: "bold",
+    input: {
+        height: 40,
+        borderColor: "gray",
+        borderWidth: 1,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        width: "80%",
     },
     button: {
         backgroundColor: "black",
         padding: 10,
         borderRadius: 5,
-        marginTop: 20,
+        margin: 20,
     }, 
     buttonText: {
         color: "white",
         fontSize: 18,
+        textAlign: "center",
     }
 });
 
