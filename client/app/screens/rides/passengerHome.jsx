@@ -35,21 +35,25 @@ const PassengerHome = () => {
 
             <Text style={styles.title}>Hello {profileData.profile.firstName} {profileData.profile.lastName}!</Text>
 
-            <Text style={styles.subtitle}>Car Details: </Text>
+            <Text style={styles.subtitle}>Car Details for (insert date): </Text>
             <View style={styles.textBox}>
                 <Text style={styles.subtitle}>Driver: {carData.cars[0].driver[0].name}</Text>
                 <Text style={styles.text}>{carData.cars[0].driver[0].phone}</Text>
-                <Text style={styles.text}>{carData.cars[0].driver[0].felly}</Text>
+                <Text style={styles.text}>{carData.cars[0].driver[0].felly}</Text>  
             </View>
 
 
             <Text style={styles.subtitle}>Your driver will pick you up at:</Text>
             <View style={styles.textBox}>
-                <Text style={styles.text}>Pickup time: 6:50pm</Text>
+                <Text style={styles.text}>Time: (insert time)</Text>
                 <Text style={styles.text}>Location: {profileData.profile.address}</Text>
 
             </View>
 
+            {/*<View style={styles.section}>
+                <Checkbox style={styles.checkbox} value={isConfirmed} onValueChange={setIsConfirmed} />
+                <Text style={styles.paragraph}>confirm</Text>
+            </View>*/}
 
             <View style={styles.section}>
                 <Pressable
@@ -61,18 +65,19 @@ const PassengerHome = () => {
                     {isConfirmed ? '✓ Confirmed' : 'Confirm'}
                     </Text>
                 </Pressable>
-            </View>
+                </View>
 
-            <Text style={styles.text}>*If you don't confirm by 6:30pm, your ride will be replaced.</Text>
+            <Text style={styles.text}>*If you don't confirm by (insert time), your ride may be replaced.</Text>
 
+            <Pressable style={styles.button} onPress={handleOpenChat}>
+                <Text style={styles.buttonText}>Open Chat</Text>
+            </Pressable>
 
             <Pressable style={styles.button} onPress={handleEditSignUp}>
                 <Text style={styles.buttonText}>Edit Sign Up</Text>
             </Pressable>
 
-            <Pressable style={styles.button} onPress={handleOpenChat}>
-                <Text style={styles.buttonText}>Open Chat</Text>
-            </Pressable>
+            
 
         </View>
     )
