@@ -22,6 +22,10 @@ const PassengerHome = () => {
         navigation.navigate("Rides SignUp");
     }
 
+    const handleConfirmToggle = () => {
+        setIsConfirmed(prev => !prev);
+    }
+
     return (
         <View style={styles.container}>
 
@@ -42,12 +46,21 @@ const PassengerHome = () => {
             <Text style={styles.subtitle}>Your driver will pick you up at:</Text>
             <View style={styles.textBox}>
                 <Text style={styles.text}>Pickup time: 6:50pm</Text>
-                <Text style={styles.text}>Location: DNTA</Text>
+                <Text style={styles.text}>Location: {profileData.profile.address}</Text>
 
             </View>
+
+
             <View style={styles.section}>
-                <Checkbox style={styles.checkbox} value={isConfirmed} onValueChange={setIsConfirmed} />
-                <Text style={styles.paragraph}>confirm</Text>
+                <Pressable
+                    style={styles.button}
+                    onPress={handleConfirmToggle}
+                    //disabled={isConfirmed}
+                >
+                    <Text style={styles.buttonText}>
+                    {isConfirmed ? '✓ Confirmed' : 'Confirm'}
+                    </Text>
+                </Pressable>
             </View>
 
             <Text style={styles.text}>*If you don't confirm by 6:30pm, your ride will be replaced.</Text>
@@ -106,7 +119,7 @@ const styles = StyleSheet.create({
     },
 
     textBox: {
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#e4f1ee',
         padding: 10,
         borderRadius: 10,
         borderWidth: 2,
@@ -114,6 +127,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         margin: 10,
+        alignSelf: 'stretch'
     },
     input: {
         height: 40,
