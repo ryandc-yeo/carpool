@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React from "react";
 import carData from './carData.json'
 
@@ -6,7 +6,7 @@ const AllRidesList = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>List of all Rides</Text>
-            <View style={styles.rideContainer}>
+            <ScrollView style={styles.rideContainer} showsVerticalScrollIndicator={false}>
             {carData.cars.map((car, index) => (
                 <View key={index} style={{ marginBottom: 10 }}>
                     {
@@ -23,7 +23,7 @@ const AllRidesList = () => {
                     }
                 </View>
             ))}
-            </View>
+            </ScrollView>
         </View>
     )
 }

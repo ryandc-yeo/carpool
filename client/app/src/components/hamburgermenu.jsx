@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../../screens/homescreen/homescreen';
 import Profile from '../../screens/profile/profile_page';
 import Login from '../../screens/login/login';
+import PhoneVerification from '../../screens/login/phoneVerification'
 import RidesHome from '../../screens/rides/ridesHome';
 import RideDetails from '../../screens/rides/allRidesList';
 import RidesSignUp from '../../screens/rides/ridesSignUp';
@@ -18,10 +19,11 @@ const screens = [
   { name: 'Home', component: HomeScreen, icon: 'home' },
   { name: 'Profile', component: Profile, icon: 'person'},
   { name: 'Login', component: Login, icon: 'person'},
+  { name: 'Phone Verification', component: PhoneVerification, icon: 'call'},
   { name: 'Rides', component: RidesHome, icon: 'car'},
   { name: 'Ride Details', component: RideDetails, icon: 'car-sport'},
   { name: 'Rides SignUp', component: RidesSignUp, icon: 'car-sport'},
-  { name: 'Chat', component: Chat, icon: 'chatbubbles'}
+  { name: 'Chat', component: Chat, icon: 'chatbubbles'}, 
 ];
 
 // creates the navigation

@@ -1,32 +1,37 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import React, {useState} from "react";
+import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
+    const navigation = useNavigation();
 
     const handleLogin = () => {
-        const regex = /^\d{3}-\d{3}-\d{4}$/;
-        if (regex.test(phoneNumber) || phoneNumber === "") {
-            setPhoneNumber(phoneNumber);
+        const regex = /^\d{3}\d{3}\d{4}$/;
+        if (regex.test(phoneNumber)) {
+            alert("Login pressed with phone number: " + phoneNumber);
+            navigation.navigate("Phone Verification", { phoneNumber: phoneNumber });
         }
         else {
-            alert("Please enter a valid phone number in the format xxx-xxx-xxxx");
+            alert("Please enter a valid phone number in the format XXX-XXX-XXXX");
+            setPhoneNumber("");
+            return;
         }
-        console.log("Login pressed with phone number:", phoneNumber);
     }  
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome! Create your profile</Text>
-            <Text style={styles.subtitle}>Phone Number</Text>
+            <Text style={styles.title}>Welcome!</Text>
+            <Text style={styles.subtitle}>To get started, enter your mobile number</Text>
+            <Text style={styles.subtitle}>We&apos;ll send you a code you can use to log in or create an account</Text>
             <TextInput
                 placeholder="000-000-0000"
                 style={styles.input}
-                onChanggeText={text => setPhoneNumber(text)}
+                onChangeText={text => setPhoneNumber(text)}
                 keyboardType="numeric"
             />
-            <Pressable onPress={() => handleLogin} style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Login</Text>
+            <Pressable onPress={() => handleLogin()} style={styles.loginButton}>
+                <Text style={styles.loginButtonText}>Next</Text>
             </Pressable>
         </View>
     )
@@ -42,8 +47,14 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
-    }, input: {
+        marginBottom: 10,
+    }, 
+    subtitle: {
+        fontSize: 18,
+        marginBottom: 10, 
+        marginTop: 10,
+    },
+    input: {
         height: 40,
         width: '100%',
         borderColor: 'gray',

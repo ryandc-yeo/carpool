@@ -1,14 +1,40 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import React from "react";
+import React, {useState} from "react";
+import { useNavigation, useRoute} from "@react-navigation/native";
+
 
 const PhoneVerification = () => {
+    const [verificationCode, setVerificationCode] = useState("");
+    const route = useRoute();
+    const {phoneNumber} = route.params;
+    const navigation = useNavigation();
+
+    const handleVerification = () => {
+        const regex = /^\d{6}$/;
+        if (regex.test(verificationCode)) {
+            alert("Verification code pressed with code: " + verificationCode);
+            // verify code with backend
+            // go to profile screen
+            navigation.navigate("Profile", { phoneNumber: phoneNumber });
+        }
+        else {
+            alert("Please enter a valid six-digit verification code");
+            setVerificationCode("");
+            return;
+        }
+    }
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome!</Text>
-            <Text style={styles.title}>Enter phone number to login</Text>
-            <TextInput style={styles.input}/>
-            <Pressable onPress={() => console.log("Login pressed")} style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Login</Text>
+            <Text style={styles.title}>Please enter the six-digit code sent to {phoneNumber}</Text>
+            <TextInput
+                placeholder="000000"
+                style={styles.input}
+                onChangeText={text => setVerificationCode(text)}
+                keyboardType="numeric"
+            />
+            <Pressable onPress={() => handleVerification()} style={styles.loginButton}>
+                <Text style={styles.loginButtonText}>Next</Text>
             </Pressable>
         </View>
     )

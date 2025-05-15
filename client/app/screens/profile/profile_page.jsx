@@ -1,22 +1,33 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
-  const addressOptions = ["Pepperdine", "UCLA", "USC"];
+  const addressOptions = ["Hill (De Neve Turn Around)", "North of Wilshire", "South of Wilshire"];
 
   const [grade, setGrade] = useState("");
   const [address, setAddress] = useState("");
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { phoneNumber } = route.params;
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome! Create your profile</Text>
 
-      <Text style={styles.subtitle}>Name</Text>
-      <TextInput placeholder="name" style={styles.input} />
+      <Text style={styles.subtitle}>First Name</Text>
+      <TextInput placeholder="First Name" style={styles.input} />
+
+      <Text style={styles.subtitle}>Last Name</Text>
+      <TextInput placeholder="Last Name" style={styles.input} />
 
       <Text style={styles.subtitle}>Phone Number</Text>
-      <TextInput placeholder="xxx-xxx-xxxx" style={styles.input} />
+      <Text>{phoneNumber}</Text>
+
 
       <Text style={styles.subtitle}>Grade</Text>
       {gradeOptions.map((g) => (
@@ -50,7 +61,7 @@ const Profile = () => {
         </View>
       ))}
 
-      <Pressable onPress={() => console.log("Profile created")} style={styles.loginButton}>
+      <Pressable onPress={() => navigation.navigate('Rides')} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Create Profile</Text>
       </Pressable>
     </View>
