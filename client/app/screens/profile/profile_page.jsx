@@ -2,17 +2,33 @@ import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
+import db from "../../src/firebase-config";
+import { collection, addDoc } from "firebase/firestore";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
   const addressOptions = ["Hill (De Neve Turn Around)", "North of Wilshire", "South of Wilshire"];
 
-  const [grade, setGrade] = useState("");
-  const [address, setAddress] = useState("");
+  const [newFname, setFname] = useState("");
+  const [newLname, setLname] = useState("");
+  const [newGrade, setGrade] = useState("");
+  const [newAddress, setAddress] = useState("");
 
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber } = route.params;
+
+  const usersCollectionRef = collection(db, "users");
+
+  const createUser = async () => {
+    await addDoc(usersCollectionRef, { 
+      fname: newFname,
+      lname: newLname,
+      grade: newGrade,
+      address: newAddress,
+      phonenumber: phoneNumber
+    });
+  };
 
 
   return (
@@ -20,10 +36,22 @@ const Profile = () => {
       <Text style={styles.title}>Welcome! Create your profile</Text>
 
       <Text style={styles.subtitle}>First Name</Text>
-      <TextInput placeholder="First Name" style={styles.input} />
+      <TextInput 
+        placeholder="First Name"
+        style={styles.input}
+        onChangeText={(text) => {
+          setFname(text);
+        }}
+      />
 
       <Text style={styles.subtitle}>Last Name</Text>
-      <TextInput placeholder="Last Name" style={styles.input} />
+      <TextInput 
+        placeholder="Last Name"
+        style={styles.input}
+        onChangeText={(text) => {
+          setLname(text);
+        }}
+      />
 
       <Text style={styles.subtitle}>Phone Number</Text>
       <Text>{phoneNumber}</Text>
@@ -35,11 +63,11 @@ const Profile = () => {
           <Pressable
             style={[
               styles.radioButtonOuter,
-              grade === g && styles.radioButtonOuterSelected,
+              newGrade === g && styles.radioButtonOuterSelected,
             ]}
             onPress={() => setGrade(g)}
           >
-            {grade === g && <View style={styles.radioButtonInner} />}
+            {newGrade === g && <View style={styles.radioButtonInner} />}
           </Pressable>
           <Text style={styles.radioText}>{g}</Text>
         </View>
@@ -51,17 +79,20 @@ const Profile = () => {
           <Pressable
             style={[
               styles.radioButtonOuter,
-              address === a && styles.radioButtonOuterSelected,
+              newAddress === a && styles.radioButtonOuterSelected,
             ]}
             onPress={() => setAddress(a)}
           >
-            {address === a && <View style={styles.radioButtonInner} />}
+            {newAddress === a && <View style={styles.radioButtonInner} />}
           </Pressable>
           <Text style={styles.radioText}>{a}</Text>
         </View>
       ))}
 
-      <Pressable onPress={() => navigation.navigate('Rides')} style={styles.loginButton}>
+      <Pressable onPress={async () => {
+        await createUser();
+        navigation.navigate('Rides');
+      }} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Create Profile</Text>
       </Pressable>
     </View>
