@@ -49,6 +49,10 @@ const Profile = () => {
           <Text style={styles.radioText}>{a}</Text>
         </View>
       ))}
+
+      <Pressable onPress={() => console.log("Profile created")} style={styles.loginButton}>
+        <Text style={styles.loginButtonText}>Create Profile</Text>
+      </Pressable>
     </View>
   );
 };
@@ -56,8 +60,8 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
+    alignItems: "left",
+    justifyContent: "center",
     padding: 20,
   },
   title: {
@@ -75,7 +79,7 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 20,
-    width: "80%",
+    width: "100%",
     paddingLeft: 10,
   },
   radioRow: {
@@ -104,6 +108,19 @@ const styles = StyleSheet.create({
     width: 10,
     borderRadius: 5,
     backgroundColor: "#007AFF",
+  },
+  loginButton: {
+    backgroundColor: "black",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 

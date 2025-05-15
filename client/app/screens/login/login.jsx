@@ -1,13 +1,31 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import React from "react";
+import React, {useState} from "react";
 
 const Login = () => {
+    const [phoneNumber, setPhoneNumber] = useState("");
+
+    const handleLogin = () => {
+        const regex = /^\d{3}-\d{3}-\d{4}$/;
+        if (regex.test(phoneNumber) || phoneNumber === "") {
+            setPhoneNumber(phoneNumber);
+        }
+        else {
+            alert("Please enter a valid phone number in the format xxx-xxx-xxxx");
+        }
+        console.log("Login pressed with phone number:", phoneNumber);
+    }  
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome!</Text>
-            <Text style={styles.title}>Enter phone number to login</Text>
-            <TextInput style={styles.input}/>
-            <Pressable onPress={() => console.log("Login pressed")} style={styles.loginButton}>
+            <Text style={styles.title}>Welcome! Create your profile</Text>
+            <Text style={styles.subtitle}>Phone Number</Text>
+            <TextInput
+                placeholder="000-000-0000"
+                style={styles.input}
+                onChanggeText={text => setPhoneNumber(text)}
+                keyboardType="numeric"
+            />
+            <Pressable onPress={() => handleLogin} style={styles.loginButton}>
                 <Text style={styles.loginButtonText}>Login</Text>
             </Pressable>
         </View>
