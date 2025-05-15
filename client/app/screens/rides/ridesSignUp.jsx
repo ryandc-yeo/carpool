@@ -8,7 +8,7 @@ const RidesSignUp = () => {
     const sundayOptions = ["Early (8am)", "Regular (10:45am)"]
     const fellyOptions = ["Yes", "No, go back early"]
 
-    const [role, setrole] = useState("");
+    const [role, setRole] = useState("");
     const [friday, setFriday] = useState("");
     const [sunday, setSunday] = useState("");
     const [felly, setFelly] = useState("");
@@ -28,7 +28,7 @@ const RidesSignUp = () => {
                           styles.radioButtonOuter,
                           role === r && styles.radioButtonOuterSelected,
                         ]}
-                        onPress={() => setGrade(g)}
+                        onPress={() => setRole(g)}
                     >
                         {role === r && <View style={styles.radioButtonInner} />}
                     </Pressable>
@@ -51,7 +51,7 @@ const RidesSignUp = () => {
                                 styles.radioButtonOuter,
                                 friday === f && styles.radioButtonOuterSelected,
                                 ]}
-                                onPress={() => setGrade(g)}
+                                onPress={() => setFriday(g)}
                             >
                                 {friday === f && <View style={styles.radioButtonInner} />}
                             </Pressable>
@@ -69,7 +69,7 @@ const RidesSignUp = () => {
                                 styles.radioButtonOuter,
                                 sunday === s && styles.radioButtonOuterSelected,
                                 ]}
-                                onPress={() => setGrade(g)}
+                                onPress={() => setSunday(g)}
                             >
                                 {sunday === s && <View style={styles.radioButtonInner} />}
                             </Pressable>
@@ -91,7 +91,7 @@ const RidesSignUp = () => {
                           styles.radioButtonOuter,
                           felly === f && styles.radioButtonOuterSelected,
                         ]}
-                        onPress={() => setGrade(g)}
+                        onPress={() => setFelly(g)}
                     >
                         {felly === f && <View style={styles.radioButtonInner} />}
                     </Pressable>
@@ -109,6 +109,8 @@ const RidesSignUp = () => {
 
             <Text style={styles.subtitle}>Questions, comments, or concerns?</Text>
             <TextInput placeholder="Input here" style={styles.input} />
+
+            
 
 
         </View>
