@@ -28,7 +28,7 @@ const RidesSignUp = () => {
                           styles.radioButtonOuter,
                           role === r && styles.radioButtonOuterSelected,
                         ]}
-                        onPress={() => setRole(g)}
+                        onPress={() => setRole(r)}
                     >
                         {role === r && <View style={styles.radioButtonInner} />}
                     </Pressable>
@@ -51,7 +51,7 @@ const RidesSignUp = () => {
                                 styles.radioButtonOuter,
                                 friday === f && styles.radioButtonOuterSelected,
                                 ]}
-                                onPress={() => setFriday(g)}
+                                onPress={() => setFriday(f)}
                             >
                                 {friday === f && <View style={styles.radioButtonInner} />}
                             </Pressable>
@@ -69,7 +69,7 @@ const RidesSignUp = () => {
                                 styles.radioButtonOuter,
                                 sunday === s && styles.radioButtonOuterSelected,
                                 ]}
-                                onPress={() => setSunday(g)}
+                                onPress={() => setSunday(s)}
                             >
                                 {sunday === s && <View style={styles.radioButtonInner} />}
                             </Pressable>
@@ -91,7 +91,7 @@ const RidesSignUp = () => {
                           styles.radioButtonOuter,
                           felly === f && styles.radioButtonOuterSelected,
                         ]}
-                        onPress={() => setFelly(g)}
+                        onPress={() => setFelly(f)}
                     >
                         {felly === f && <View style={styles.radioButtonInner} />}
                     </Pressable>
@@ -110,8 +110,9 @@ const RidesSignUp = () => {
             <Text style={styles.subtitle}>Questions, comments, or concerns?</Text>
             <TextInput placeholder="Input here" style={styles.input} />
 
-            
-
+            <Pressable style={styles.button} onPress={() => console.log("Submit")}>
+                <Text style={styles.buttonText}>Submit</Text>
+            </Pressable>
 
         </View>
     )
@@ -174,8 +175,18 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: "#007AFF",
       },
-      
-
+      button: {
+        backgroundColor: "black",
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 20,
+        width: '100%',
+      }, 
+      buttonText: {
+        color: "white",
+        fontSize: 18,
+        textAlign: "center",
+      },
 });
 
 export default RidesSignUp;
