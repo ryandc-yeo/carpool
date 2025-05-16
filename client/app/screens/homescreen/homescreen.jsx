@@ -5,7 +5,6 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Carpooling!</Text>
-      <Text style={styles.subtitle}>This is the Home Screen</Text>
       <View style={styles.buttonContainer}>
         <Button 
           title="Menu" 
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'top',
+    justifyContent: 'center',
     padding: 20,
   },
   title: {
