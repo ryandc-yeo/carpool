@@ -15,14 +15,14 @@ const RidesSignUp = () => {
     const [felly, setFelly] = useState("");
     const [address, setAddress] = useState("");
     const [isNewcomer, setisNewcomer] = useState(false);
+    const [acknowledge, setAcknowledge] = useState(false);
 
 
     return (
 
         <View style={styles.container}>
             <ScrollView 
-                horizontal={false}
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{ flexGrow: 1, padding: 20 }}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
             >
@@ -56,29 +56,32 @@ const RidesSignUp = () => {
                     </View>
                 ))}
             </View>
-
-            <Text style={styles.subtitle}>If you are a driver, how many people can you drive (excluding you?) </Text>
-            <TextInput placeholder="Input here" style={styles.input} />
             
-
-            <Text style={styles.subtitle}>Select which days you want a ride:</Text>
-            <View style={styles.horizontalGroup}>
-                <View>
-                    <Text>Friday</Text>
-                    {fridayOptions.map((f) => (
-                        <View key={f} style={styles.radioRow}>
-                            <Pressable
-                                style={[
-                                styles.radioButtonOuter,
-                                friday === f && styles.radioButtonOuterSelected,
-                                ]}
-                                onPress={() => setFriday(f)}
-                            >
-                                {friday === f && <View style={styles.radioButtonInner} />}
-                            </Pressable>
-                            <Text style={styles.radioText}>{f}</Text>
-                        </View>
-                    ))}
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>If you are a driver, how many people can you drive (excluding you?) </Text>
+              <TextInput placeholder="Input here" style={styles.input} />
+            </View>
+            
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Select which days you want a ride:</Text>
+              <View style={styles.horizontalGroup}>
+                  <View>
+                      <Text>Friday</Text>
+                      {fridayOptions.map((f) => (
+                          <View key={f} style={styles.radioRow}>
+                              <Pressable
+                                  style={[
+                                  styles.radioButtonOuter,
+                                  friday === f && styles.radioButtonOuterSelected,
+                                  ]}
+                                  onPress={() => setFriday(f)}
+                              >
+                                  {friday === f && <View style={styles.radioButtonInner} />}
+                              </Pressable>
+                              <Text style={styles.radioText}>{f}</Text>
+                          </View>
+                      ))}
+                  </View>
                 </View>
 
                 <View>
@@ -102,56 +105,65 @@ const RidesSignUp = () => {
             </View>
 
             
-            
-            <Text style={styles.subtitle}>Stay for lunch or go back immediately?</Text>
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Stay for lunch or go back immediately?</Text>
 
-            {fellyOptions.map((f) => (
-                <View key={f} style={styles.radioRow}>
-                    <Pressable
-                        style={[
-                          styles.radioButtonOuter,
-                          felly === f && styles.radioButtonOuterSelected,
-                        ]}
-                        onPress={() => setFelly(f)}
-                    >
-                        {felly === f && <View style={styles.radioButtonInner} />}
-                    </Pressable>
-                    <Text style={styles.radioText}>{f}</Text>
-                </View>
-            ))}
-
-            <Text style={styles.subtitle}>Where are you located?</Text>
-                  {addressOptions.map((a) => (
-                    <View key={a} style={styles.radioRow}>
+              {fellyOptions.map((f) => (
+                  <View key={f} style={styles.radioRow}>
                       <Pressable
-                        style={[
-                          styles.radioButtonOuter,
-                          address === a && styles.radioButtonOuterSelected,
-                        ]}
-                        onPress={() => setAddress(a)}
+                          style={[
+                            styles.radioButtonOuter,
+                            felly === f && styles.radioButtonOuterSelected,
+                          ]}
+                          onPress={() => setFelly(f)}
                       >
-                        {address === a && <View style={styles.radioButtonInner} />}
+                          {felly === f && <View style={styles.radioButtonInner} />}
                       </Pressable>
-                      <Text style={styles.radioText}>{a}</Text>
-                    </View>
-                  ))}
-
-            <Text style={styles.subtitle}>Please check this box if you are a newcomer!</Text>
-            <View style={styles.section}>
-                <Checkbox style={styles.checkbox} value={isNewcomer} onValueChange={setisNewcomer} />
-                <Text style={styles.paragraph}>I am a newcomer!</Text>
+                      <Text style={styles.radioText}>{f}</Text>
+                  </View>
+              ))}
             </View>
 
-            <Text style={styles.subtitle}>Rides are a privilege and gift, not a right that everyone is entitled to. Rides coords, drivers, and the church all come together to try our best to accommodate transportation. Each individual's action matters. </Text>
-            <Text style={styles.subtitle}>By signing up, you are committing to receiving a ride for Friday and/or Sunday. If you are unable to uphold this commitment, you must email citizenslacollege@gmail.com at least 24 hours in advance. Failure to do so will first result in a warning strike; repeated failure will lead to suspension from receiving rides from the church for the remainder of the semester/quarter. </Text>
-            <View style={styles.section}>
-                <Checkbox style={styles.checkbox} value={isNewcomer} onValueChange={setisNewcomer} />
-                <Text style={styles.paragraph}>I understand if I give less than 24 hrs for a cancellation, I will be given a warning strike (or suspension, if I already have a strike)</Text>
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Where are you located?</Text>
+                    {addressOptions.map((a) => (
+                      <View key={a} style={styles.radioRow}>
+                        <Pressable
+                          style={[
+                            styles.radioButtonOuter,
+                            address === a && styles.radioButtonOuterSelected,
+                          ]}
+                          onPress={() => setAddress(a)}
+                        >
+                          {address === a && <View style={styles.radioButtonInner} />}
+                        </Pressable>
+                        <Text style={styles.radioText}>{a}</Text>
+                      </View>
+                    ))}
+            </View>
+            
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Please check this box if you are a newcomer!</Text>
+              <View style={styles.section}>
+                  <Checkbox style={styles.checkbox} value={isNewcomer} onValueChange={setisNewcomer} />
+                  <Text style={styles.paragraph}>I am a newcomer!</Text>
+              </View>
+            </View> 
+                    
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Rides are a privilege and gift, not a right that everyone is entitled to. Rides coords, drivers, and the church all come together to try our best to accommodate transportation. Each individual's action matters. </Text>
+              <Text style={styles.subtitle}>By signing up, you are committing to receiving a ride for Friday and/or Sunday. If you are unable to uphold this commitment, you must email citizenslacollege@gmail.com at least 24 hours in advance. Failure to do so will first result in a warning strike; repeated failure will lead to suspension from receiving rides from the church for the remainder of the semester/quarter. </Text>
+              <View style={styles.section}>
+                  <Checkbox style={styles.checkbox} value={acknowledge} onValueChange={setAcknowledge} />
+                  <Text style={styles.paragraph}>I understand if I give less than 24 hrs for a cancellation, I will be given a warning strike (or suspension, if I already have a strike)</Text>
+              </View>
             </View>
 
-            <Text style={styles.subtitle}>Any questions, comments, or concerns?</Text>
-            <TextInput placeholder="Input here" style={styles.input} />
-
+            <View style={styles.question}>
+              <Text style={styles.subtitle}>Any questions, comments, or concerns?</Text>
+              <TextInput placeholder="Input here" style={styles.input} />
+            </View>
+                  
             <Pressable style={styles.button} onPress={() => console.log("Submit")}>
                 <Text style={styles.buttonText}>Submit</Text>
             </Pressable>
@@ -163,12 +175,16 @@ const RidesSignUp = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
         padding: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
       },
       question: {
         marginBottom: 20,
+        padding: 30,
+        justifyContent: "center",
+        alignItems: "left",
         borderRadius: 5,
         backgroundColor: "#f9f9f9",
         width: "100%",
@@ -211,6 +227,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 10,
+        flexWrap: "wrap",
       },
       radioText: {
         marginLeft: 10,
