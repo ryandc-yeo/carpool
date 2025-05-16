@@ -1,7 +1,6 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
-import { useRoute } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -54,7 +53,7 @@ const Profile = () => {
       />
 
       <Text style={styles.subtitle}>Phone Number</Text>
-      <Text>{phoneNumber}</Text>
+      <Text>{phoneNumber || ''}</Text>
 
 
       <Text style={styles.subtitle}>Grade</Text>

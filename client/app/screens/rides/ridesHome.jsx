@@ -7,9 +7,9 @@ const RidesHome = () => {
     const handleSignUp = () => {
         navigation.navigate("Rides SignUp");
     }
-    const handleAllRides = () => {
-        navigation.navigate("Ride Details");
-    }
+    // const handleAllRides = () => {
+    //     navigation.navigate("Ride Details");
+    // }
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Rides Home</Text>
@@ -22,9 +22,9 @@ const RidesHome = () => {
             <Pressable style={styles.button} onPress={handleSignUp}>
                 <Text style={styles.buttonText}>Sign Up for a Ride</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={handleAllRides}>
+            {/* <Pressable style={styles.button} onPress={handleAllRides}>
                 <Text style={styles.buttonText}>View All Rides</Text>
-            </Pressable>
+            </Pressable> */}
         </View>
     )
 }
