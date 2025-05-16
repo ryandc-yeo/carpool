@@ -28,3 +28,11 @@ You should create two terminals:
 - React Native
 - Express
 - Firebase
+
+## Passenger Flow
+1. Click menu and navigate to Login to sign up
+2. Fill in phone number and enter in six-digit code to verify phone number
+3. Create profile by filling in name, grade, and address information
+4. Rides Home: displays information about signup deadlines and will allow passengers to sign up for rides
+5. Rides Signup page: click passenger and fill in information about rides sign-up
+6. Upon submit, passengers will be navigated to Passenger Home, where they can see their car and driver details. They have to confirm their ride. From this page, they can edit their sign up, view all rides, and open their driver chat. 
