@@ -1,22 +1,60 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
+import { useRoute, useNavigation} from "@react-navigation/native";
+import db from "../../src/firebase-config";
+import { collection, addDoc } from "firebase/firestore";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
-  const addressOptions = ["Pepperdine", "UCLA", "USC"];
+  const addressOptions = ["Hill (De Neve Turn Around)", "North of Wilshire", "South of Wilshire"];
 
-  const [grade, setGrade] = useState("");
-  const [address, setAddress] = useState("");
+  const [newFname, setFname] = useState("");
+  const [newLname, setLname] = useState("");
+  const [newGrade, setGrade] = useState("");
+  const [newAddress, setAddress] = useState("");
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { phoneNumber } = route.params;
+
+  const usersCollectionRef = collection(db, "users");
+
+  const createUser = async () => {
+    await addDoc(usersCollectionRef, { 
+      fname: newFname,
+      lname: newLname,
+      grade: newGrade,
+      address: newAddress,
+      phonenumber: phoneNumber
+    });
+  };
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome! Create your profile</Text>
 
-      <Text style={styles.subtitle}>Name</Text>
-      <TextInput placeholder="name" style={styles.input} />
+      <Text style={styles.subtitle}>First Name</Text>
+      <TextInput 
+        placeholder="First Name"
+        style={styles.input}
+        onChangeText={(text) => {
+          setFname(text);
+        }}
+      />
+
+      <Text style={styles.subtitle}>Last Name</Text>
+      <TextInput 
+        placeholder="Last Name"
+        style={styles.input}
+        onChangeText={(text) => {
+          setLname(text);
+        }}
+      />
 
       <Text style={styles.subtitle}>Phone Number</Text>
-      <TextInput placeholder="xxx-xxx-xxxx" style={styles.input} />
+      <Text>{phoneNumber || ''}</Text>
+
 
       <Text style={styles.subtitle}>Grade</Text>
       {gradeOptions.map((g) => (
@@ -24,11 +62,11 @@ const Profile = () => {
           <Pressable
             style={[
               styles.radioButtonOuter,
-              grade === g && styles.radioButtonOuterSelected,
+              newGrade === g && styles.radioButtonOuterSelected,
             ]}
             onPress={() => setGrade(g)}
           >
-            {grade === g && <View style={styles.radioButtonInner} />}
+            {newGrade === g && <View style={styles.radioButtonInner} />}
           </Pressable>
           <Text style={styles.radioText}>{g}</Text>
         </View>
@@ -40,15 +78,22 @@ const Profile = () => {
           <Pressable
             style={[
               styles.radioButtonOuter,
-              address === a && styles.radioButtonOuterSelected,
+              newAddress === a && styles.radioButtonOuterSelected,
             ]}
             onPress={() => setAddress(a)}
           >
-            {address === a && <View style={styles.radioButtonInner} />}
+            {newAddress === a && <View style={styles.radioButtonInner} />}
           </Pressable>
           <Text style={styles.radioText}>{a}</Text>
         </View>
       ))}
+
+      <Pressable onPress={async () => {
+        await createUser();
+        navigation.navigate('Rides');
+      }} style={styles.loginButton}>
+        <Text style={styles.loginButtonText}>Create Profile</Text>
+      </Pressable>
     </View>
   );
 };
@@ -56,8 +101,8 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
+    alignItems: "left",
+    justifyContent: "center",
     padding: 20,
   },
   title: {
@@ -75,7 +120,7 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 20,
-    width: "80%",
+    width: "100%",
     paddingLeft: 10,
   },
   radioRow: {
@@ -104,6 +149,19 @@ const styles = StyleSheet.create({
     width: 10,
     borderRadius: 5,
     backgroundColor: "#007AFF",
+  },
+  loginButton: {
+    backgroundColor: "black",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 
