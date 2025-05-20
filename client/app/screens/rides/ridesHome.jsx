@@ -7,7 +7,7 @@ const RidesHome = () => {
 
     const [fridayDate, setFridayDate] = useState('');
     const [sundayDate, setSundayDate] = useState('');
-    const [hasSignedUp, setHasSignedUp] = useState('');
+    const [hasSignedUp, setHasSignedUp] = useState(false);
 
     const handleSignUp = () => {
         setHasSignedUp(true);  // Probably need to change this after connecting backend
@@ -53,18 +53,22 @@ const RidesHome = () => {
                 Welcome to the rides page! You can sign up and view available rides here.
             </Text>
             <View style={styles.question}>
-                <Text style={styles.text}>Please fill out this form weekly. It will close promptly at the following times this week:</Text>  
+                <Text style={styles.text}>Please fill out this form each week. The deadlines for this week are:</Text>  
                 <Text style={styles.redText}>• THURSDAY EVENING at 10PM for Friday rides ({fridayDate})</Text>
                 <Text style={styles.redText}>• FRIDAY EVENING at 10PM for Sunday rides ({sundayDate})</Text>
             
             </View>
-           <Text style={styles.text}>Please make sure to sign up before the deadline!</Text>
+            <Text style={styles.text}>Be sure to sign up before the deadline — spots may not be guaranteed afterward.</Text>
+
             <Pressable style={styles.button} onPress={handleSignUp}>
-                <Text style={styles.buttonText}>Sign Up for a Ride</Text>
+                <Text style={styles.buttonText}>{hasSignedUp ? "Edit Sign Up" : "Sign Up for a Ride"}</Text>
             </Pressable>
             <Pressable style={[styles.button, { backgroundColor: hasSignedUp ? "black" : "#ccc" }]}onPress={hasSignedUp ? handleAllRides : null}>
                 <Text style={styles.buttonText}>View All Rides</Text>
             </Pressable>
+            {!hasSignedUp && (
+                <Text style={styles.text}>Please sign up first to see the rides list</Text>
+            )}
         </View>
     )
 }
@@ -99,13 +103,14 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: "black",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
+        padding: 10,
+        borderRadius: 5,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 20,
     }, 
+
     buttonText: {
         color: "white",
         fontSize: 18,
