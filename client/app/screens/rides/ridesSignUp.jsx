@@ -154,8 +154,8 @@ const RidesSignUp = () => {
             </View> 
                     
             <View style={styles.question}>
-              <Text style={styles.subtitle}>Rides are a privilege and gift, not a right that everyone is entitled to. Rides coords, drivers, and the church all come together to try our best to accommodate transportation. Each individual&apos;s action matters. </Text>
-              <Text style={styles.subtitle}>By signing up, you are committing to receiving a ride for Friday and/or Sunday. If you are unable to uphold this commitment, you must email citizenslacollege@gmail.com at least 24 hours in advance. Failure to do so will first result in a warning strike; repeated failure will lead to suspension from receiving rides from the church for the remainder of the semester/quarter. </Text>
+              <Text style={styles.subtitle}>Rides are a privilege and gift, not a right that everyone is entitled to. Please be respectful and practice proper car ettiquette!</Text>
+              <Text style={styles.subtitle}>By signing up, you are committing to receiving a ride for Friday and/or Sunday. If you are unable to uphold this commitment, you must email a ride coordinator (INSERT CONTACT) at least 24 hours in advance. Failure to do so will first result in a warning strike; repeated failure will lead to suspension from receiving rides from the church for the remainder of the semester/quarter. </Text>
               <View style={styles.section}>
                   <Checkbox style={styles.checkbox} value={acknowledge} onValueChange={setAcknowledge} />
                   <Text style={styles.paragraph}>I understand if I give less than 24 hrs for a cancellation, I will be given a warning strike (or suspension, if I already have a strike)</Text>

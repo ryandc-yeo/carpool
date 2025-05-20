@@ -7,16 +7,11 @@ const RidesHome = () => {
 
     const [fridayDate, setFridayDate] = useState('');
     const [sundayDate, setSundayDate] = useState('');
-    const [hasSignedUp, setHasSignedUp] = useState(false);
 
     const handleSignUp = () => {
-        setHasSignedUp(true);  // Probably need to change this after connecting backend
         navigation.navigate("Rides SignUp");
     }
-    const handleAllRides = () => {
-        navigation.navigate("Ride Details");
-    }
-
+   
     // Not sure how this function works entirely, so can change later. For now, updates fine
     useEffect(() => {
         const calculateDates = () => {
@@ -61,14 +56,9 @@ const RidesHome = () => {
             <Text style={styles.text}>Be sure to sign up before the deadline — spots may not be guaranteed afterward.</Text>
 
             <Pressable style={styles.button} onPress={handleSignUp}>
-                <Text style={styles.buttonText}>{hasSignedUp ? "Edit Sign Up" : "Sign Up for a Ride"}</Text>
+                <Text style={styles.buttonText}>Sign Up for a Ride</Text>
             </Pressable>
-            <Pressable style={[styles.button, { backgroundColor: hasSignedUp ? "black" : "#ccc" }]}onPress={hasSignedUp ? handleAllRides : null}>
-                <Text style={styles.buttonText}>View All Rides</Text>
-            </Pressable>
-            {!hasSignedUp && (
-                <Text style={styles.text}>Please sign up first to see the rides list</Text>
-            )}
+           
         </View>
     )
 }
