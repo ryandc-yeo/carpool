@@ -7,15 +7,17 @@ const RidesHome = () => {
 
     const [fridayDate, setFridayDate] = useState('');
     const [sundayDate, setSundayDate] = useState('');
-
+    const [hasSignedUp, setHasSignedUp] = useState('');
 
     const handleSignUp = () => {
+        setHasSignedUp(true);  // Probably need to change this after connecting backend
         navigation.navigate("Rides SignUp");
     }
-    // const handleAllRides = () => {
-    //     navigation.navigate("Ride Details");
-    // }
+    const handleAllRides = () => {
+        navigation.navigate("Ride Details");
+    }
 
+    // Not sure how this function works entirely, so can change later. For now, updates fine
     useEffect(() => {
         const calculateDates = () => {
             const today = new Date();
@@ -48,17 +50,21 @@ const RidesHome = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Rides Home</Text>
             <Text style={styles.text}>
-                Welcome to the rides home screen! Here you can sign up for rides and view all available rides.
+                Welcome to the rides page! You can sign up and view available rides here.
             </Text>
-            <Text style={styles.redText}>Deadline for Friday {fridayDate} rides: Thursday at 10PM!</Text>
-            <Text style={styles.redText}>Deadline for Sunday {sundayDate} rides: Friday at 10PM!</Text>
-            <Text style={styles.text}>Please make sure to sign up on time!</Text>
+            <View style={styles.question}>
+                <Text style={styles.text}>Please fill out this form weekly. It will close promptly at the following times this week:</Text>  
+                <Text style={styles.redText}>• THURSDAY EVENING at 10PM for Friday rides ({fridayDate})</Text>
+                <Text style={styles.redText}>• FRIDAY EVENING at 10PM for Sunday rides ({sundayDate})</Text>
+            
+            </View>
+           <Text style={styles.text}>Please make sure to sign up before the deadline!</Text>
             <Pressable style={styles.button} onPress={handleSignUp}>
                 <Text style={styles.buttonText}>Sign Up for a Ride</Text>
             </Pressable>
-            {/* <Pressable style={styles.button} onPress={handleAllRides}>
+            <Pressable style={[styles.button, { backgroundColor: hasSignedUp ? "black" : "#ccc" }]}onPress={hasSignedUp ? handleAllRides : null}>
                 <Text style={styles.buttonText}>View All Rides</Text>
-            </Pressable> */}
+            </Pressable>
         </View>
     )
 }
@@ -75,6 +81,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
     },
+    subtitle: {
+        fontSize: 18,
+        marginBottom: 10, 
+        marginTop: 10,
+    },
     text: {
         fontSize: 16,
         marginBottom: 10,
@@ -83,19 +94,31 @@ const styles = StyleSheet.create({
     redText: {
         fontSize: 16,
         marginBottom: 10,
-        color: "red",
+        color: "#f01e2c",
         fontWeight: "bold",
     },
     button: {
         backgroundColor: "black",
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 20,
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
     }, 
     buttonText: {
         color: "white",
         fontSize: 18,
-    }
+    },
+    question: {
+        marginBottom: 20,
+        padding: 30,
+        justifyContent: "center",
+        alignItems: "left",
+        borderRadius: 5,
+        backgroundColor: "#f9f9f9",
+        width: "100%",
+      },
 });
 
 export default RidesHome;
