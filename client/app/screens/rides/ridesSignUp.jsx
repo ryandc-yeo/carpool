@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const RidesSignUp = () => {
     const roleOptions = ["Passenger", "Driver"];
-    const fridayOptions = ["Early (5pm)", "Regular (6:30pm"]
+    const fridayOptions = ["Early (5pm)", "Regular (6:30pm)"]
     const sundayOptions = ["Early (8am)", "Regular (10:45am)"]
     const fellyOptions = ["Yes", "No, go back early"]
     const addressOptions = ["Hill (De Neve Turn Around)", "North of Wilshire", "South of Wilshire"];

@@ -1,15 +1,31 @@
 import { View, Text, StyleSheet, Pressable} from "react-native";
 import React, {useState, useEffect} from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import db from "../../src/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 
 const RidesHome = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { phoneNumber } = route.params;
 
-    const [fridayDate, setFridayDate] = useState('');
-    const [sundayDate, setSundayDate] = useState('');
+    const [fridayDate, setFridayDate] = useState("");
+    const [sundayDate, setSundayDate] = useState("");
+    const [userData, setUserData] = useState("");
 
     const handleSignUp = () => {
         navigation.navigate("Rides SignUp");
+    }
+
+    const getUser = async () => {
+        try {
+            const userDoc = await getDoc(doc(db, "users", phoneNumber));
+            setUserData(userDoc.data());
+        }
+        catch (err) {
+            console.error("Error checking Firestore: ", err);
+            alert("Something wrong. Please try again.");
+        }
     }
    
     // Not sure how this function works entirely, so can change later. For now, updates fine
@@ -39,11 +55,18 @@ const RidesHome = () => {
             setSundayDate(formatDate(sundayDateObj));
         };
         calculateDates()
-    })
+    }, []);
+
+    useEffect(() => {
+        (async () => {
+            await getUser();
+        })();
+    }, []);
     
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Rides Home</Text>
+            <Text>Hello {userData.fname} {userData.lname}</Text>
             <Text style={styles.text}>
                 Welcome to the rides page! You can sign up and view available rides here.
             </Text>

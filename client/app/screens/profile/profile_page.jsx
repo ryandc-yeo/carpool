@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { collection, addDoc } from "firebase/firestore";
+import { doc , setDoc } from "firebase/firestore";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
@@ -17,18 +17,15 @@ const Profile = () => {
   const route = useRoute();
   const { phoneNumber } = route.params;
 
-  const usersCollectionRef = collection(db, "users");
-
   const createUser = async () => {
-    await addDoc(usersCollectionRef, { 
+    await setDoc(doc(db, "users", phoneNumber), { 
       fname: newFname,
       lname: newLname,
       grade: newGrade,
-      address: newAddress,
-      phonenumber: phoneNumber
+      address: newAddress
     });
   };
-
+  
 
   return (
     <View style={styles.container}>
@@ -90,7 +87,7 @@ const Profile = () => {
 
       <Pressable onPress={async () => {
         await createUser();
-        navigation.navigate('Rides');
+        navigation.navigate("Rides", { phoneNumber: phoneNumber });
       }} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Create Profile</Text>
       </Pressable>
