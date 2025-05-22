@@ -248,7 +248,12 @@ const RidesSignUp = () => {
               onPress={async () => {
                 const success = await addToRides();
                 if (success) {
-                  navigation.navigate("Passenger Home");
+                  if (role === "Driver") {
+                    navigation.navigate("Driver Home", { userData: userData });
+                  }
+                  else {
+                    navigation.navigate("Passenger Home", { userData: userData });
+                  }
                 } else {
                   alert("Could not submit. Please fill all required fields.");
                 }
