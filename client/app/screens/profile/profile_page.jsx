@@ -23,7 +23,7 @@ const Profile = () => {
       lname: newLname,
       grade: newGrade,
       address: newAddress
-    });
+    }, { merge: true });
   };
   
 
