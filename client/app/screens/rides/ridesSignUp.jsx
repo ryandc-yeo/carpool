@@ -52,7 +52,7 @@ const RidesSignUp = () => {
           address: address,
           time: timeValue(friday),
           newcomer: isNewcomer,
-        });
+        }, { merge: true });
       } else {
         await setDoc(doc(db, "Friday Passengers", phoneNumber), {
           fname: userData.fname,
@@ -61,7 +61,7 @@ const RidesSignUp = () => {
           address: address,
           time: timeValue(friday),
           newcomer: isNewcomer,
-        });
+        }, { merge: true });
       }
 
       if (sunday !== "" && role === "Driver") {
@@ -73,7 +73,7 @@ const RidesSignUp = () => {
           time: timeValue(sunday),
           felly: felly,
           newcomer: isNewcomer,
-        });
+        }, { merge: true });
       } else {
         await setDoc(doc(db, "Sunday Passengers", phoneNumber), {
           fname: userData.fname,
@@ -83,7 +83,7 @@ const RidesSignUp = () => {
           time: timeValue(sunday),
           felly: felly,
           newcomer: isNewcomer,
-        });
+        }, { merge: true });
       }
 
       return true;

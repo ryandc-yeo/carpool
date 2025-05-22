@@ -13,6 +13,7 @@ import RidesSignUp from '../../screens/rides/ridesSignUp';
 import DriverHome from '../../screens/rides/driverHome';
 import PassengerHome from '../../screens/rides/passengerHome';
 import Chat from '../../screens/chat/chat';
+import AdminHome from '../../screens/admin/adminhome';
 
 const Drawer = createDrawerNavigator();
 
@@ -28,10 +29,11 @@ const allScreens = [
   { name: 'Driver Home', component: DriverHome, icon: 'car-sport' },
   { name: 'Passenger Home', component: PassengerHome, icon: 'car-sport' },
   { name: 'Chat', component: Chat, icon: 'chatbubbles' },
+  { name: 'Admin Home', component: AdminHome, icon: 'home' },
 ];
 
 // visible screens
-const visibleScreenNames = ['Home', 'Login', 'Rides', 'Chat'];
+const visibleScreenNames = ['Home', 'Login', 'Rides', 'Chat', 'Admin Home'];
 
 // navigator
 const DrawerNavigator = () => {

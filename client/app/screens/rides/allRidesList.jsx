@@ -1,54 +1,118 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React from "react";
-import carData from './carData.json'
+import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import { useNavigation} from "@react-navigation/native";
+import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
+import db from "../../src/firebase-config";
 
 const AllRidesList = () => {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>List of all Rides</Text>
-            <ScrollView style={styles.rideContainer} showsVerticalScrollIndicator={false}>
-            {carData.cars.map((car, index) => (
-                <View key={index} style={{ marginBottom: 10 }}>
-                    {
-                        car.driver?.map((d, index) => (
-                            <View key={index} style={{ marginBottom: 5 }}>
-                                <Text style={styles.driverText}>Driver: {d.name} - {d.felly}</Text>
-                            </View>
-                        ))
-                    }
-                    {
-                        car.passenger?.map((passenger, index) => (
-                            <Text key={index}> {index +1}. {passenger.name}</Text>
-                        ))
-                    }
-                </View>
-            ))}
-            </ScrollView>
+    const navigation = useNavigation();
+
+    const [carGroups, setCarGroups] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const configRef = doc(db, "meta", "config");
+
+        const unsubscribe = onSnapshot(configRef, async (configSnap) => {
+            const ridesGenerated = configSnap.exists() && configSnap.data().ridesGenerated;
+
+            if (!ridesGenerated) {
+                alert("Rides are not generated yet. Please check back later.");
+                navigation.goBack();
+                return;
+            }
+
+            const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
+            const groups = driversSnapshot.docs.map(docSnap => {
+                const data = docSnap.data();
+                return {
+                    driver: {
+                        phoneNumber: docSnap.id,
+                        fname: data.fname,
+                        lname: data.lname
+                    },
+                    passengers: Array.isArray(data.passengers) ? data.passengers : []
+                };
+            });
+
+            setCarGroups(groups);
+            setLoading(false);
+        });
+
+        return () => unsubscribe(); // clean up on unmount
+    }, []);
+
+    if (loading) {
+        return (
+        <View style={styles.center}>
+            <ActivityIndicator size="large" />
+            <Text>Loading car assignments...</Text>
         </View>
-    )
-}
+        );
+    }
+
+    if (carGroups.length === 0) {
+        return (
+            <View style={styles.center}>
+            <Text>No rides found. Check if rides were generated and drivers are populated.</Text>
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+        {carGroups.map((group, index) => (
+            <View key={index} style={styles.card}>
+            <Text style={styles.title}>🚗 Car {index + 1}</Text>
+            <Text style={styles.driver}>
+                Driver: {group.driver.fname} {group.driver.lname} ({group.driver.phoneNumber})
+            </Text>
+            <Text style={styles.subheading}>Passengers:</Text>
+            {group.passengers.length > 0 ? (
+                group.passengers.map((p, i) => (
+                <Text key={i} style={styles.passenger}>
+                    - {p.fname} {p.lname} ({p.phoneNumber})
+                </Text>
+                ))
+            ) : (
+                <Text style={styles.passenger}>None assigned</Text>
+            )}
+            </View>
+        ))}
+        </ScrollView>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'left',
-        justifyContent: 'top',
-        padding: 20,
-    }, 
+        padding: 16,
+        paddingBottom: 40
+    },
+    card: {
+        backgroundColor: "#f0f0f0",
+        borderRadius: 10,
+        padding: 16,
+        marginBottom: 16
+    },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        fontSize: 18,
+        fontWeight: "bold"
     },
-    rideContainer: {
-        display: "flex",
-        padding: 10,
-        borderRadius: 5,
+    driver: {
+        marginTop: 8,
+        fontWeight: "600"
     },
-    driverText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'blue',
+    subheading: {
+        marginTop: 8,
+        fontWeight: "bold"
+    },
+    passenger: {
+        marginLeft: 12
+    },
+    center: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
 
