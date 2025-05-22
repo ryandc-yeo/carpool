@@ -17,7 +17,7 @@ const Login = () => {
             setPhoneNumber("");
             return;
         }
-    }  
+    }
 
     return (
         <View style={styles.container}>

@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import React, {useState} from "react";
 import { useNavigation, useRoute} from "@react-navigation/native";
+import db from "../../src/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 
 
 const PhoneVerification = () => {
@@ -9,20 +11,34 @@ const PhoneVerification = () => {
     const {phoneNumber} = route.params;
     const navigation = useNavigation();
 
-    const handleVerification = () => {
+    const handleVerification = async () => {
         const regex = /^\d{6}$/;
         if (regex.test(verificationCode)) {
-            alert("Verification code pressed with code: " + verificationCode);
             // verify code with backend
-            // go to profile screen
-            navigation.navigate("Profile", { phoneNumber: phoneNumber });
+
+            try {
+                const userDoc = await getDoc(doc(db, "users", phoneNumber));
+
+                if (userDoc.exists()) {
+                    alert("Welcome " + userDoc.data().fname + " " + userDoc.data().lname + "!");
+                    navigation.navigate("Rides", { phoneNumber: phoneNumber });
+                }
+                else {
+                    alert("Verification code pressed with code: " + verificationCode);
+                    navigation.navigate("Profile", { phoneNumber: phoneNumber });
+                }
+            }
+            catch (err) {
+                console.error("Error checking Firestore: ", err);
+                alert("Something wrong. Please try again.");
+            }
         }
         else {
             alert("Please enter a valid six-digit verification code");
             setVerificationCode("");
             return;
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
