@@ -54,7 +54,7 @@ const AdminHome = () => {
                     phoneNumber: p.phoneNumber,
                     fname: p.fname,
                     lname: p.lname,
-                    location: p.address
+                    address: p.address
                 }))
             });
 

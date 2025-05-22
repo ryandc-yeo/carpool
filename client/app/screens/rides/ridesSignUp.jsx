@@ -249,10 +249,10 @@ const RidesSignUp = () => {
                 const success = await addToRides();
                 if (success) {
                   if (role === "Driver") {
-                    navigation.navigate("Driver Home", { userData: userData });
+                    navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
                   }
                   else {
-                    navigation.navigate("Passenger Home", { userData: userData });
+                    navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
                   }
                 } else {
                   alert("Could not submit. Please fill all required fields.");
