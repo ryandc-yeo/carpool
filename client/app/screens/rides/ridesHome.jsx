@@ -14,7 +14,7 @@ const RidesHome = () => {
     const [userData, setUserData] = useState("");
 
     const handleSignUp = () => {
-        navigation.navigate("Rides SignUp");
+        navigation.navigate("Rides SignUp", {phoneNumber: phoneNumber});
     }
 
     const getUser = async () => {

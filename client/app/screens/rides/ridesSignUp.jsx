@@ -1,7 +1,10 @@
 import { View, Text, TextInput, StyleSheet, Pressable, ScrollView} from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Checkbox from 'expo-checkbox';
-import { useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import db from "../../src/firebase-config";
+import { doc, setDoc } from "firebase/firestore";
+import fetchUserData from "../../src/util/utilities";
 
 const RidesSignUp = () => {
     const roleOptions = ["Passenger", "Driver"];
@@ -17,11 +20,84 @@ const RidesSignUp = () => {
     const [address, setAddress] = useState("");
     const [isNewcomer, setisNewcomer] = useState(false);
     const [acknowledge, setAcknowledge] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const [loadingData, setLoadingData] = useState(true);
 
     const navigation = useNavigation();
+    const route = useRoute();
+    const { phoneNumber } = route.params;
+
+    useEffect(() => {
+      (async () => {
+        const data = await fetchUserData(phoneNumber);
+        setUserData(data);
+        setLoadingData(false);
+      })();
+    }, []);
+
+    const addToRides = async () => {
+      if (!userData || !userData.fname) {
+        alert("User data not loaded yet");
+        return;
+      }
+
+      const timeValue = (slot) =>
+        slot === "Early (5pm)" || slot === "Early (8am)" ? "early" : "regular";
+
+      if (friday !== "" && role === "Driver") {
+        await setDoc(doc(db, "Friday Drivers", phoneNumber), {
+          fname: userData.fname,
+          lname: userData.lname,
+          grade: userData.grade,
+          address: address,
+          time: timeValue(friday),
+          newcomer: isNewcomer,
+        });
+      } else {
+        await setDoc(doc(db, "Friday Passengers", phoneNumber), {
+          fname: userData.fname,
+          lname: userData.lname,
+          grade: userData.grade,
+          address: address,
+          time: timeValue(friday),
+          newcomer: isNewcomer,
+        });
+      }
+
+      if (sunday !== "" && role === "Driver") {
+        await setDoc(doc(db, "Sunday Drivers", phoneNumber), {
+          fname: userData.fname,
+          lname: userData.lname,
+          grade: userData.grade,
+          address: address,
+          time: timeValue(sunday),
+          felly: felly,
+          newcomer: isNewcomer,
+        });
+      } else {
+        await setDoc(doc(db, "Sunday Passengers", phoneNumber), {
+          fname: userData.fname,
+          lname: userData.lname,
+          grade: userData.grade,
+          address: address,
+          time: timeValue(sunday),
+          felly: felly,
+          newcomer: isNewcomer,
+        });
+      }
+
+      return true;
+    };
+
+    if (loadingData) {
+      return (
+        <View style={styles.container}>
+          <Text>Loading...</Text>
+        </View>
+      );
+    }
 
     return (
-
         <View style={styles.container}>
             <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, padding: 20 }}
@@ -167,7 +243,17 @@ const RidesSignUp = () => {
               <TextInput placeholder="Input here" style={styles.input} />
             </View>
                   
-            <Pressable style={styles.button} onPress={() => navigation.navigate("Passenger Home")}>
+            <Pressable
+              style={styles.button}
+              onPress={async () => {
+                const success = await addToRides();
+                if (success) {
+                  navigation.navigate("Passenger Home");
+                } else {
+                  alert("Could not submit. Please fill all required fields.");
+                }
+              }}
+            >
                 <Text style={styles.buttonText}>Submit</Text>
             </Pressable>
             </ScrollView>
