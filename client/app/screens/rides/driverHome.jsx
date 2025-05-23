@@ -1,95 +1,146 @@
-import { View, Text, StyleSheet, Pressable, TextInput} from "react-native";
-import React, {useState} from "react";
-import { useNavigation, useRoute} from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import db from "../../src/firebase-config";
 
 const DriverHome = () => {
-    const [hasTime, setHasTime] = useState(false);
-    const [time1, setTime1] = useState("");
-    const [time2, setTime2] = useState("");
-    const [time3, setTime3] = useState("");
-    const [time4, setTime4] = useState("");
-    const navigation = useNavigation();
-    const route = useRoute(); 
-    const { role } = route.params || {};
+  const navigation = useNavigation();
+  const route = useRoute(); 
+  const { phoneNumber, role } = route.params || {};
+  const [passengers, setPassengers] = useState([]);
+  const [pickupTimes, setPickupTimes] = useState({});
 
-    const handleSetTime = () => {
-        if (time1 && time2 && time3 && time4) {
-            setHasTime(true);
-        }
+  const handleGoBack = () => {
+    navigation.navigate("Rides", { phoneNumber });
+  };
+
+  useEffect(() => {
+    const loadDriverInfo = async () => {
+      const driverRef = doc(db, "Sunday Drivers", phoneNumber);
+      const driverSnap = await getDoc(driverRef);
+
+      if (driverSnap.exists()) {
+        const data = driverSnap.data();
+        setPassengers(data.passengers || []);
+        setPickupTimes(
+          Object.fromEntries(
+            (data.passengers || []).map((p) => [
+              p.phoneNumber,
+              p.pickupTime || "",
+            ])
+          )
+        );
+      }
+    };
+
+    loadDriverInfo();
+  }, []);
+
+  const handleTimeChange = (phone, time) => {
+    setPickupTimes((prev) => ({ ...prev, [phone]: time }));
+  };
+
+  const handleSubmitTimes = async () => {
+    const updatedPassengers = passengers.map((p) => ({
+      ...p,
+      pickupTime: pickupTimes[p.phoneNumber] || "",
+      acknowledged: false,
+    }));
+
+    await updateDoc(doc(db, "Sunday Drivers", phoneNumber), {
+      passengers: updatedPassengers,
+    });
+
+    for (const p of updatedPassengers) {
+      await updateDoc(doc(db, "Sunday Passengers", p.phoneNumber), {
+        pickupTime: p.pickupTime,
+        acknowledged: false,
+      });
     }
-    const handleAllRides = () => {
-        navigation.navigate("Ride Details", {role: role});
-    }
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Driver Home</Text>
-            <Text style={styles.text}>Thank you for being a driver!</Text>
-            <Pressable style={styles.button} onPress={handleAllRides}>
-                <Text style={styles.buttonText}>View All Rides</Text>
-            </Pressable>
-            <Text style={styles.text}>Set time for passengers</Text>
-            <Text>Passenger 1: </Text>
-            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime1(text)}/>
-            <Text>Passenger 2: </Text>
-            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime2(text)}/>
-            <Text>Passenger 3: </Text>
-            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime3(text)}/>
-            <Text>Passenger 4: </Text>
-            <TextInput placeholder="6:50PM" style={styles.input} onChangeText={text => setTime4(text)}/>
-            {hasTime ? (
-                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                    <Pressable style={styles.button}>
-                        <Text style={styles.buttonText}>Edit Time</Text>
-                    </Pressable>
-                    <Pressable style={styles.button} onPress={() => navigation.navigate("Chat")}>
-                        <Text style={styles.buttonText}>Open Chat</Text>
-                    </Pressable>
-                </View>
-            ) : (
-                <Pressable style={styles.button} onPress={handleSetTime}>
-                    <Text style={styles.buttonText}>Send Times</Text>
-                </Pressable>
-            )}
+
+    alert("Pickup times saved!");
+    setPassengers(updatedPassengers);
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Pressable style={styles.backButton} onPress={handleGoBack}>
+        <Text style={styles.backButtonText}>← Back to Rides Home</Text>
+      </Pressable>
+      <Text style={styles.header}>Your Passengers</Text>
+      {passengers.map((p, index) => (
+        <View key={index} style={styles.card}>
+          <Text style={styles.name}>
+            {p.fname} {p.lname}
+          </Text>
+          <Text style={styles.address}>{p.address || "No address"}</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter pickup time"
+            value={pickupTimes[p.phoneNumber] || ""}
+            onChangeText={(text) => handleTimeChange(p.phoneNumber, text)}
+          />
+          <Text style={styles.status}>
+            Acknowledged: {p.acknowledged ? "YES" : "NO"}
+          </Text>
         </View>
-    )
-}
+      ))}
+
+      <Pressable title="Submit Pickup Times" onPress={handleSubmitTimes} />
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'top',
-        padding: 20,
-    }, 
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    text: {
-        fontSize: 16,
-        marginBottom: 10,
-        color: "#555",
-    }, 
-    input: {
-        height: 40,
-        borderColor: "gray",
-        borderWidth: 1,
-        marginBottom: 20,
-        paddingHorizontal: 10,
-        width: "80%",
-    },
-    button: {
-        backgroundColor: "black",
-        padding: 10,
-        borderRadius: 5,
-        margin: 20,
-    }, 
-    buttonText: {
-        color: "white",
-        fontSize: 18,
-        textAlign: "center",
-    }
+  container: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    marginBottom: 20,
+    padding: 10,
+    position: "absolute",
+    top: 60,
+    left: 16,
+    zIndex: 1,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: "#007AFF",
+    fontWeight: "500",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 16,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  address: {
+    marginTop: 4,
+    fontStyle: "italic",
+  },
+  input: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    marginTop: 10,
+    padding: 8,
+    borderRadius: 6,
+  },
+  status: {
+    marginTop: 10,
+    fontWeight: "600",
+  },
 });
 
 export default DriverHome;

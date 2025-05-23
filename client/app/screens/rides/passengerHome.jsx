@@ -1,191 +1,151 @@
-import { View, Text, StyleSheet, Pressable} from "react-native";
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Checkbox from 'expo-checkbox';
-import carData from './carData.json'
-import profileData from '../profile/profileData.json'
-
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import db from "../../src/firebase-config";
 
 const PassengerHome = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { role } = route.params || {};  // fallback in case it's missing
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { phoneNumber, role } = route.params || {};
+  const [passengerData, setPassengerData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const [isConfirmed, setIsConfirmed] = useState(false);
-    
-    const handleAllRides = () => {
-        navigation.navigate("Ride Details", {role: role});
+  const handleGoBack = () => {
+    navigation.navigate("Rides", { phoneNumber });
+  };
+
+  const fetchPassengerData = async () => {
+    const passengerRef = doc(db, "Sunday Passengers", phoneNumber);
+    const passengerSnap = await getDoc(passengerRef);
+
+    if (passengerSnap.exists()) {
+      setPassengerData(passengerSnap.data());
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPassengerData();
+  }, []);
+
+  const acknowledgePickup = async () => {
+    const passengerRef = doc(db, "Sunday Passengers", phoneNumber);
+
+    await updateDoc(passengerRef, {
+      acknowledged: true,
+    });
+
+    const driverPhone = passengerData.driver?.phoneNumber;
+    if (driverPhone) {
+      const driverRef = doc(db, "Sunday Drivers", driverPhone);
+      const driverSnap = await getDoc(driverRef);
+
+      if (driverSnap.exists()) {
+        const updatedPassengers = driverSnap
+          .data()
+          .passengers.map((p) =>
+            p.phoneNumber === phoneNumber ? { ...p, acknowledged: true } : p
+          );
+
+        await updateDoc(driverRef, { passengers: updatedPassengers });
+      }
     }
 
-    const handleOpenChat = () => {
-        navigation.navigate("Chat");
-    }
+    setPassengerData((prev) => ({ ...prev, acknowledged: true }));
+    alert("Pickup time acknowledged!");
+  };
 
-    const handleEditSignUp = () => {
-        navigation.navigate("Rides SignUp");
-    }
-
-    const handleConfirmToggle = () => {
-        setIsConfirmed(prev => !prev);
-    }
-
-
+  if (loading || !passengerData) {
     return (
-        <View style={styles.container}>
+      <View style={styles.center}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
-            <Pressable style={styles.button} onPress={handleAllRides}>
-                <Text style={styles.buttonText}>View All Rides</Text>
-            </Pressable>
+  const { fname, lname, address, pickupTime, acknowledged, driver } =
+    passengerData;
 
-            <Text style={styles.title}>Hello {profileData.profile.firstName} {profileData.profile.lastName}!</Text>
+  return (
+    <View style={styles.container}>
+      <Pressable style={styles.backButton} onPress={handleGoBack}>
+        <Text style={styles.backButtonText}>← Back to Rides Home</Text>
+      </Pressable>
+      <Text style={styles.header}>
+        Welcome {fname} {lname}
+      </Text>
+      <Text style={styles.info}>Your Address: {address}</Text>
 
-            <Text style={styles.subtitle}>Car Details for (insert date): </Text>
-            <View style={styles.textBox}>
-                <Text style={styles.subtitle}>Driver: {carData.cars[0].driver[0].name}</Text>
-                <Text style={styles.text}>{carData.cars[0].driver[0].phone}</Text>
-                <Text style={styles.text}>{carData.cars[0].driver[0].felly}</Text>  
-            </View>
+      {driver ? (
+        <>
+          <Text style={styles.info}>
+            Your Driver: {driver.fname} {driver.lname}
+          </Text>
+          <Text style={styles.info}>
+            Pickup Time: {pickupTime || "Not yet assigned"}
+          </Text>
+        </>
+      ) : (
+        <Text style={styles.info}>No driver assigned yet.</Text>
+      )}
 
+      {pickupTime && !acknowledged && (
+        <Pressable
+          title="Acknowledge Pickup Time"
+          onPress={acknowledgePickup}
+        />
+      )}
 
-            <Text style={styles.subtitle}>Your driver will pick you up at:</Text>
-            <View style={styles.textBox}>
-                <Text style={styles.text}>Time: (insert time)</Text>
-                <Text style={styles.text}>Location: {profileData.profile.address}</Text>
-
-            </View>
-
-            {/*<View style={styles.section}>
-                <Checkbox style={styles.checkbox} value={isConfirmed} onValueChange={setIsConfirmed} />
-                <Text style={styles.paragraph}>confirm</Text>
-            </View>*/}
-
-            <View style={styles.section}>
-                <Pressable
-                    style={styles.button}
-                    onPress={handleConfirmToggle}
-                    //disabled={isConfirmed}
-                >
-                    <Text style={styles.buttonText}>
-                    {isConfirmed ? '✓ Confirmed' : 'Confirm'}
-                    </Text>
-                </Pressable>
-                </View>
-
-            <Text style={styles.text}>*If you don't confirm by (insert time), your ride may be replaced.</Text>
-
-            <Pressable style={styles.button} onPress={handleOpenChat}>
-                <Text style={styles.buttonText}>Open Chat</Text>
-            </Pressable>
-
-            <Pressable style={styles.button} onPress={handleEditSignUp}>
-                <Text style={styles.buttonText}>Edit Sign Up</Text>
-            </Pressable>
-
-            
-
-        </View>
-    )
-}
+      {acknowledged && (
+        <Text style={styles.confirmation}>
+          Thank you. You have acknowledged your pickup time.
+        </Text>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-        padding: 20,
-      },
-      question: {
-        marginBottom: 20,
-        borderRadius: 5,
-        backgroundColor: "#f9f9f9",
-        width: "100%",
-      },
-    horizontalGroup: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap:15
-      },
-      title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 10,
-      },
-      subtitle: {
-        fontSize: 18,
-        marginBottom: 10, 
-        marginTop: 10,
-    },
-    section: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 10,
-        gap: 10,
-    },
-    text: {
-        fontSize: 14,
-        marginBottom: 10,
-        color: "#555",
-    },
-
-    textBox: {
-        backgroundColor: '#e4f1ee',
-        padding: 10,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: "#999",
-        alignItems: "center",
-        justifyContent: "center",
-        margin: 10,
-        alignSelf: 'stretch'
-    },
-    input: {
-        height: 40,
-        borderColor: "gray",
-        borderWidth: 1,
-        marginBottom: 20,
-        width: "80%",
-        paddingLeft: 10,
-      },
-      radioRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 10,
-      },
-      radioText: {
-        marginLeft: 10,
-        fontSize: 16,
-      },
-      radioButtonOuter: {
-        height: 20,
-        width: 20,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: "#999",
-        alignItems: "center",
-        justifyContent: "center",
-      },
-      radioButtonOuterSelected: {
-        borderColor: "#007AFF",
-      },
-      radioButtonInner: {
-        height: 10,
-        width: 10,
-        borderRadius: 5,
-        backgroundColor: "#007AFF",
-      },
-      button: {
-        backgroundColor: "black",
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 20,
-        width: '100%',
-      }, 
-      buttonText: {
-        color: "white",
-        fontSize: 18,
-        textAlign: "center",
-      }
-    
+  container: {
+    padding: 24,
+    flex: 1,
+    justifyContent: "center",
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    marginBottom: 20,
+    padding: 10,
+    position: "absolute",
+    top: 60,
+    left: 20,
+    zIndex: 1,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: "#007AFF",
+    fontWeight: "500",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  info: {
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  confirmation: {
+    marginTop: 20,
+    color: "green",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default PassengerHome;
