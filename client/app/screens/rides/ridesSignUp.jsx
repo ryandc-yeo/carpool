@@ -327,11 +327,11 @@ const RidesSignUp = () => {
             if (success) {
               if (role === "Driver") {
                 navigation.navigate("Driver Home", {
-                  phoneNumber: phoneNumber,
+                  phoneNumber: phoneNumber, role: role,
                 });
               } else {
                 navigation.navigate("Passenger Home", {
-                  phoneNumber: phoneNumber,
+                  phoneNumber: phoneNumber, role: role,
                 });
               }
             } else {

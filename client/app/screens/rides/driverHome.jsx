@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import db from "../../src/firebase-config";
 
 const DriverHome = () => {
   const navigation = useNavigation();
-  const { phoneNumber } = useRoute().params;
+  const route = useRoute(); 
+  const { phoneNumber, role } = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
 

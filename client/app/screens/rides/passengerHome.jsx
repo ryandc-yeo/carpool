@@ -6,7 +6,8 @@ import db from "../../src/firebase-config";
 
 const PassengerHome = () => {
   const navigation = useNavigation();
-  const { phoneNumber } = useRoute().params;
+  const route = useRoute();
+  const { phoneNumber, role } = route.params || {};
   const [passengerData, setPassengerData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +22,6 @@ const PassengerHome = () => {
     if (passengerSnap.exists()) {
       setPassengerData(passengerSnap.data());
     }
-
     setLoading(false);
   };
 
