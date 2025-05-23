@@ -87,7 +87,9 @@ const DriverHome = () => {
         </View>
       ))}
 
-      <Pressable title="Submit Pickup Times" onPress={handleSubmitTimes} />
+      <Pressable style={styles.submitButton} onPress={handleSubmitTimes}>
+        <Text style={styles.submitButtonText}>Submit Pickup Times</Text>
+      </Pressable>
     </ScrollView>
   );
 };
@@ -140,6 +142,19 @@ const styles = StyleSheet.create({
   status: {
     marginTop: 10,
     fontWeight: "600",
+  },
+  submitButton: {
+    backgroundColor: "black",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 
