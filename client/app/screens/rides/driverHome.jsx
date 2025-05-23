@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable, TextInput} from "react-native";
 import React, {useState} from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute} from "@react-navigation/native";
 
 const DriverHome = () => {
     const [hasTime, setHasTime] = useState(false);
@@ -9,13 +9,16 @@ const DriverHome = () => {
     const [time3, setTime3] = useState("");
     const [time4, setTime4] = useState("");
     const navigation = useNavigation();
+    const route = useRoute(); 
+    const { role } = route.params || {};
+
     const handleSetTime = () => {
         if (time1 && time2 && time3 && time4) {
             setHasTime(true);
         }
     }
     const handleAllRides = () => {
-        navigation.navigate("Ride Details");
+        navigation.navigate("Ride Details", {role: role});
     }
     return (
         <View style={styles.container}>

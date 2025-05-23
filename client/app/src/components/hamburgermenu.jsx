@@ -14,6 +14,7 @@ import DriverHome from '../../screens/rides/driverHome';
 import PassengerHome from '../../screens/rides/passengerHome';
 import Chat from '../../screens/chat/chat';
 import AdminHome from '../../screens/admin/adminhome';
+import RidesNotReleased from '../../screens/rides/ridesNotReleased';
 
 const Drawer = createDrawerNavigator();
 
@@ -30,6 +31,8 @@ const allScreens = [
   { name: 'Passenger Home', component: PassengerHome, icon: 'car-sport' },
   { name: 'Chat', component: Chat, icon: 'chatbubbles' },
   { name: 'Admin Home', component: AdminHome, icon: 'home' },
+  { name: 'Rides Not Released', component: RidesNotReleased, icon: 'home' },
+
 ];
 
 // visible screens

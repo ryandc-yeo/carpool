@@ -1,46 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
-import { useNavigation} from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect} from "@react-navigation/native";
 import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import db from "../../src/firebase-config";
 
 const AllRidesList = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { role } = route.params || {};
 
     const [carGroups, setCarGroups] = useState([]);
     const [loading, setLoading] = useState(true);
+    useFocusEffect(
+        useCallback(() => {
+            const configRef = doc(db, "meta", "config");
 
-    useEffect(() => {
-        const configRef = doc(db, "meta", "config");
+            const unsubscribe = onSnapshot(configRef, async (configSnap) => {
+                const ridesGenerated = configSnap.exists() && configSnap.data().ridesGenerated;
 
-        const unsubscribe = onSnapshot(configRef, async (configSnap) => {
-            const ridesGenerated = configSnap.exists() && configSnap.data().ridesGenerated;
+                if (!ridesGenerated) {
+                    //alert("Rides are not generated yet. Please check back later.");
+                    navigation.navigate("Rides Not Released", {role: role});
+                    return;
+                }
 
-            if (!ridesGenerated) {
-                alert("Rides are not generated yet. Please check back later.");
-                navigation.goBack();
-                return;
-            }
+                const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
+                const groups = driversSnapshot.docs.map(docSnap => {
+                    const data = docSnap.data();
+                    return {
+                        driver: {
+                            phoneNumber: docSnap.id,
+                            fname: data.fname,
+                            lname: data.lname
+                        },
+                        passengers: Array.isArray(data.passengers) ? data.passengers : []
+                    };
+                });
 
-            const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
-            const groups = driversSnapshot.docs.map(docSnap => {
-                const data = docSnap.data();
-                return {
-                    driver: {
-                        phoneNumber: docSnap.id,
-                        fname: data.fname,
-                        lname: data.lname
-                    },
-                    passengers: Array.isArray(data.passengers) ? data.passengers : []
-                };
+                setCarGroups(groups);
+                setLoading(false);
             });
 
-            setCarGroups(groups);
-            setLoading(false);
-        });
-
-        return () => unsubscribe(); // clean up on unmount
-    }, []);
+            return () => unsubscribe(); // clean up on unmount
+        }, [role])
+    );
+    
 
     if (loading) {
         return (
@@ -48,14 +52,6 @@ const AllRidesList = () => {
             <ActivityIndicator size="large" />
             <Text>Loading car assignments...</Text>
         </View>
-        );
-    }
-
-    if (carGroups.length === 0) {
-        return (
-            <View style={styles.center}>
-            <Text>No rides found. Check if rides were generated and drivers are populated.</Text>
-            </View>
         );
     }
 

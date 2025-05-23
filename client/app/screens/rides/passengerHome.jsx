@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable} from "react-native";
 import React, {useState} from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Checkbox from 'expo-checkbox';
 import carData from './carData.json'
 import profileData from '../profile/profileData.json'
@@ -8,10 +8,13 @@ import profileData from '../profile/profileData.json'
 
 const PassengerHome = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { role } = route.params || {};  // fallback in case it's missing
+
     const [isConfirmed, setIsConfirmed] = useState(false);
     
     const handleAllRides = () => {
-        navigation.navigate("Ride Details");
+        navigation.navigate("Ride Details", {role: role});
     }
 
     const handleOpenChat = () => {
@@ -25,6 +28,7 @@ const PassengerHome = () => {
     const handleConfirmToggle = () => {
         setIsConfirmed(prev => !prev);
     }
+
 
     return (
         <View style={styles.container}>
