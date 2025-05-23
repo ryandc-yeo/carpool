@@ -24,7 +24,7 @@ const RidesNotReleased = () => {
             </Text>
             <Text style={styles.text}>Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>
             <Pressable style={styles.button} onPress={handleGoBack}>
-            <Text style={styles.buttonText}>← Back to Home</Text>
+            <Text style={styles.buttonText}>← Back To Home</Text>
             </Pressable>
         </View>
     )
