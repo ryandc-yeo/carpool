@@ -15,6 +15,14 @@ const PassengerHome = () => {
     navigation.navigate("Rides", { phoneNumber });
   };
 
+  const handleAllRides = () => {
+    navigation.navigate("Ride Details");
+  }
+
+  const handleEditSignUp = () => {
+    navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
+  }
+
   const fetchPassengerData = async () => {
     const passengerRef = doc(db, "Sunday Passengers", phoneNumber);
     const passengerSnap = await getDoc(passengerRef);
@@ -69,8 +77,11 @@ const PassengerHome = () => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.backButton} onPress={handleGoBack}>
+      {/* <Pressable style={styles.backButton} onPress={handleGoBack}>
         <Text style={styles.backButtonText}>← Back to Rides Home</Text>
+      </Pressable> */}
+      <Pressable style={styles.button} onPress={handleAllRides}>
+        <Text style={styles.buttonText}>View All Rides</Text>
       </Pressable>
       <Text style={styles.header}>
         Welcome {fname} {lname}
@@ -91,17 +102,21 @@ const PassengerHome = () => {
       )}
 
       {pickupTime && !acknowledged && (
-        <Pressable
-          title="Acknowledge Pickup Time"
-          onPress={acknowledgePickup}
-        />
+        <Pressable style={styles.button} onPress={acknowledgePickup}>
+          <Text style={styles.buttonText}>"Acknowledge Pickup Time"</Text>
+        </Pressable>
       )}
+
+      <Text style={styles.text}>*If you don't confirm by (insert time), your ride may be replaced.</Text>
 
       {acknowledged && (
         <Text style={styles.confirmation}>
           Thank you. You have acknowledged your pickup time.
         </Text>
       )}
+      <Pressable style={styles.button} onPress={handleEditSignUp}>
+        <Text style={styles.buttonText}>Edit Sign Up</Text>
+      </Pressable>
     </View>
   );
 };
@@ -146,6 +161,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  button: {
+    backgroundColor: "black",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    width: '100%',
+  }, 
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    textAlign: "center",
+  }
 });
 
 export default PassengerHome;
