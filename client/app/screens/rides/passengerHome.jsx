@@ -12,7 +12,7 @@ const PassengerHome = () => {
   const [loading, setLoading] = useState(true);
 
   const handleGoBack = () => {
-    navigation.navigate("Rides", { phoneNumber });
+    navigation.navigate("Rides", { phoneNumber: phoneNumber });
   };
 
   const handleAllRides = () => {

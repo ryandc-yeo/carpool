@@ -9,11 +9,11 @@ const RidesNotReleased = () => {
     const { role } = route.params || {};
 
     const handleGoBack = () => {
-    if (role === "Driver") {
-      navigation.navigate("Driver Home", { role });
-    } else {
-      navigation.navigate("Passenger Home", { role });
-    }
+      if (role === "Driver") {
+        navigation.navigate("Driver Home", { role });
+      } else {
+        navigation.navigate("Passenger Home", { role });
+      }
     };
 
     return (

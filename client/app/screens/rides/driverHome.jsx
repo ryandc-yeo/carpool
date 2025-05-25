@@ -12,7 +12,7 @@ const DriverHome = () => {
   const [pickupTimes, setPickupTimes] = useState({});
 
   const handleGoBack = () => {
-    navigation.navigate("Rides", { phoneNumber });
+    navigation.navigate("Rides", { phoneNumber: phoneNumber });
   };
 
   const handleAllRides = () => {

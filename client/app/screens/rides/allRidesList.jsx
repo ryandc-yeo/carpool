@@ -13,7 +13,11 @@ const AllRidesList = () => {
     const [loading, setLoading] = useState(true);
 
     const handleGoBack = () => {
-        navigation.navigate("Rides", { phoneNumber: phoneNumber });
+        if (role === "Driver") {
+            navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
+        } else {
+            navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
+        }
     };
 
     useFocusEffect(
