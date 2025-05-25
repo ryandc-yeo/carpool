@@ -3,7 +3,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import screens
-import HomeScreen from '../../screens/homescreen/homescreen';
 import Profile from '../../screens/profile/profile_page';
 import Login from '../../screens/login/login';
 import PhoneVerification from '../../screens/login/phoneVerification';
@@ -20,10 +19,9 @@ const Drawer = createDrawerNavigator();
 
 // define all screens
 const allScreens = [
-  { name: 'Home', component: HomeScreen, icon: 'home' },
-  { name: 'Profile', component: Profile, icon: 'person' },
   { name: 'Login', component: Login, icon: 'person' },
   { name: 'Phone Verification', component: PhoneVerification, icon: 'call' },
+  { name: 'Profile', component: Profile, icon: 'person' },
   { name: 'Rides', component: RidesHome, icon: 'car' },
   { name: 'Ride Details', component: RideDetails, icon: 'car-sport' },
   { name: 'Rides SignUp', component: RidesSignUp, icon: 'car-sport' },
@@ -32,11 +30,10 @@ const allScreens = [
   { name: 'Chat', component: Chat, icon: 'chatbubbles' },
   { name: 'Admin Home', component: AdminHome, icon: 'home' },
   { name: 'Rides Not Released', component: RidesNotReleased, icon: 'home' },
-
 ];
 
 // visible screens
-const visibleScreenNames = ['Home', 'Login', 'Rides', 'Chat', 'Admin Home'];
+const visibleScreenNames = ['Login', 'Rides', 'Chat', 'Admin Home'];
 
 // navigator
 const DrawerNavigator = () => {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import { useNavigation, useRoute, useFocusEffect} from "@react-navigation/native";
 import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import db from "../../src/firebase-config";
@@ -7,10 +7,15 @@ import db from "../../src/firebase-config";
 const AllRidesList = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { role } = route.params || {};
+    const { phoneNumber, role } = route.params || {};
 
     const [carGroups, setCarGroups] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const handleGoBack = () => {
+        navigation.navigate("Rides", { phoneNumber: phoneNumber });
+    };
+
     useFocusEffect(
         useCallback(() => {
             const configRef = doc(db, "meta", "config");
@@ -57,24 +62,29 @@ const AllRidesList = () => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-        {carGroups.map((group, index) => (
-            <View key={index} style={styles.card}>
-            <Text style={styles.title}>🚗 Car {index + 1}</Text>
-            <Text style={styles.driver}>
-                Driver: {group.driver.fname} {group.driver.lname} ({group.driver.phoneNumber})
-            </Text>
-            <Text style={styles.subheading}>Passengers:</Text>
-            {group.passengers.length > 0 ? (
-                group.passengers.map((p, i) => (
-                <Text key={i} style={styles.passenger}>
-                    - {p.fname} {p.lname} ({p.phoneNumber})
-                </Text>
-                ))
-            ) : (
-                <Text style={styles.passenger}>None assigned</Text>
-            )}
+            <View style={styles.headerRow}>
+                <Pressable style={styles.backButton} onPress={handleGoBack}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </Pressable>
             </View>
-        ))}
+            {carGroups.map((group, index) => (
+                <View key={index} style={styles.card}>
+                <Text style={styles.title}>🚗 Car {index + 1}</Text>
+                <Text style={styles.driver}>
+                    Driver: {group.driver.fname} {group.driver.lname}
+                </Text>
+                <Text style={styles.subheading}>Passengers:</Text>
+                {group.passengers.length > 0 ? (
+                    group.passengers.map((p, i) => (
+                    <Text key={i} style={styles.passenger}>
+                        - {p.fname} {p.lname}
+                    </Text>
+                    ))
+                ) : (
+                    <Text style={styles.passenger}>None assigned</Text>
+                )}
+                </View>
+            ))}
         </ScrollView>
     );
 };
@@ -83,6 +93,19 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         paddingBottom: 40
+    },
+    headerRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    backButton: {
+        padding: 10,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: "#007AFF",
     },
     card: {
         backgroundColor: "#f0f0f0",
