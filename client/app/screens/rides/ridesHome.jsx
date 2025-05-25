@@ -17,8 +17,16 @@ const RidesHome = () => {
     navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
   };
 
-  const handleGoBack = () => {
-    navigation.goBack();
+  const viewRide = async () => {
+    const driverDoc = await getDoc(doc(db, "Sunday Drivers", phoneNumber));
+    if (driverDoc.exists()) {
+      navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
+    }
+    
+    const passDoc = await getDoc(doc(db, "Sunday Passengers", phoneNumber));
+    if (passDoc.exists()) {
+      navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
+    }
   };
 
   const getUser = async () => {
@@ -68,10 +76,6 @@ const RidesHome = () => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.backButton} onPress={handleGoBack}>
-        <Text style={styles.backButtonText}>← Back</Text>
-      </Pressable>
-
       <Text style={styles.title}>Rides Home</Text>
       <Text>
         Hello {userData.fname} {userData.lname}
@@ -98,6 +102,10 @@ const RidesHome = () => {
 
       <Pressable style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up for a Ride</Text>
+      </Pressable>
+
+      <Pressable style={styles.button} onPress={viewRide}>
+        <Text style={styles.buttonText}>View Ride</Text>
       </Pressable>
     </View>
   );

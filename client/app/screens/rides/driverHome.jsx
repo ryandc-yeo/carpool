@@ -7,13 +7,17 @@ import db from "../../src/firebase-config";
 const DriverHome = () => {
   const navigation = useNavigation();
   const route = useRoute(); 
-  const { phoneNumber, role } = route.params || {};
+  const { phoneNumber } = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
 
   const handleGoBack = () => {
     navigation.navigate("Rides", { phoneNumber });
   };
+
+  const handleAllRides = () => {
+    navigation.navigate("Ride Details", { phoneNumber: phoneNumber, role: "Driver" });
+  }
 
   useEffect(() => {
     const loadDriverInfo = async () => {
@@ -65,16 +69,22 @@ const DriverHome = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Pressable style={styles.backButton} onPress={handleGoBack}>
-        <Text style={styles.backButtonText}>← Back to Rides Home</Text>
-      </Pressable>
+      <View style={styles.headerRow}>
+        <Pressable style={styles.backButton} onPress={handleGoBack}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </Pressable>
+        <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
+          <Text style={styles.viewAllText}>View All Rides</Text>
+        </Pressable>
+      </View>
+      
       <Text style={styles.header}>Your Passengers</Text>
       {passengers.map((p, index) => (
-        <View key={index} style={styles.card}>
+        <View key={index} style={styles.textBox}>
           <Text style={styles.name}>
             {p.fname} {p.lname}
           </Text>
-          <Text style={styles.address}>{p.address || "No address"}</Text>
+          <Text style={styles.address}>{p.address || "No address"} || {p.phoneNumber}</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter pickup time"
@@ -87,8 +97,8 @@ const DriverHome = () => {
         </View>
       ))}
 
-      <Pressable style={styles.submitButton} onPress={handleSubmitTimes}>
-        <Text style={styles.submitButtonText}>Submit Pickup Times</Text>
+      <Pressable style={styles.button} onPress={handleSubmitTimes}>
+        <Text style={styles.buttonText}>Submit Pickup Times</Text>
       </Pressable>
     </ScrollView>
   );
@@ -99,16 +109,23 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40,
   },
-  backButton: {
-    alignSelf: "flex-start",
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
+  },
+  backButton: {
     padding: 10,
-    position: "absolute",
-    top: 60,
-    left: 16,
-    zIndex: 1,
   },
   backButtonText: {
+    fontSize: 16,
+    color: "#007AFF",
+  },
+  viewAllButton: {
+    padding: 10,
+  },
+  viewAllText: {
     fontSize: 16,
     color: "#007AFF",
     fontWeight: "500",
@@ -118,11 +135,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-  card: {
-    backgroundColor: "#f0f0f0",
+  textBox: {
+    backgroundColor: '#e4f1ee',
+    padding: 10,
     borderRadius: 10,
-    padding: 16,
-    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: "#999",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    alignSelf: 'stretch'
   },
   name: {
     fontSize: 18,
@@ -143,7 +165,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: "600",
   },
-  submitButton: {
+  button: {
     backgroundColor: "black",
     padding: 10,
     borderRadius: 5,
@@ -152,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
   },
-  submitButtonText: {
+  buttonText: {
     color: "white",
     fontSize: 18,
   },
