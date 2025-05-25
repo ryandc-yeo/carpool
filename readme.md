@@ -2,6 +2,8 @@
 
 CS 188 project
 
+<img src="https://github.com/ryandc-yeo/carpool/raw/main/client/assets/images/logo.png" alt="Carpool Logo" width="200"/>
+
 ## Setup Instruction
 
 Clone the repo with:
