@@ -73,20 +73,41 @@ const AllRidesList = () => {
             </View>
             {carGroups.map((group, index) => (
                 <View key={index} style={styles.card}>
-                <Text style={styles.title}>🚗 Car {index + 1}</Text>
-                <Text style={styles.driver}>
-                    Driver: {group.driver.fname} {group.driver.lname}
-                </Text>
-                <Text style={styles.subheading}>Passengers:</Text>
-                {group.passengers.length > 0 ? (
-                    group.passengers.map((p, i) => (
-                    <Text key={i} style={styles.passenger}>
-                        - {p.fname} {p.lname}
+                    <Text style={styles.cardTitle}>🚗 Car {index + 1}</Text>
+                    <Text
+                        style={[
+                        styles.cardText,
+                        group.driver.phoneNumber === phoneNumber && {
+                            fontWeight: "bold",
+                            color: "#007AFF",
+                        },
+                        ]}
+                    >
+                        <Text style={{ fontWeight: '600' }}>Driver: </Text>
+                        {group.driver.fname} {group.driver.lname}
+                        {group.driver.phoneNumber === phoneNumber && " (You)"}
                     </Text>
-                    ))
-                ) : (
-                    <Text style={styles.passenger}>None assigned</Text>
-                )}
+
+                    <Text style={[styles.cardText, { fontWeight: '600', marginTop: 2 }]}>Passengers:</Text>
+                    {group.passengers.length > 0 ? (
+                        group.passengers.map((p, i) => {
+                        const isCurrentUser = p.phoneNumber === phoneNumber;
+                        return (
+                            <Text
+                            key={i}
+                            style={[
+                                styles.cardText,
+                                isCurrentUser && { fontWeight: "bold", color: "#007AFF" }, 
+                            ]}
+                            >
+                            {p.fname} {p.lname}
+                            {isCurrentUser && " (You)"}
+                            </Text>
+                        );
+                        })
+                    ) : (
+                        <Text style={styles.passenger}>None assigned</Text>
+                    )}
                 </View>
             ))}
         </ScrollView>
@@ -112,11 +133,28 @@ const styles = StyleSheet.create({
         color: "#007AFF",
     },
     card: {
-        backgroundColor: "#f0f0f0",
-        borderRadius: 10,
-        padding: 16,
-        marginBottom: 16
-    },
+    backgroundColor: "#f9f9f9",
+    padding: 16,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.01,
+    shadowRadius: 5,
+    marginBottom: 16,
+    width: "100%",
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
+  },
     title: {
         fontSize: 18,
         fontWeight: "bold"

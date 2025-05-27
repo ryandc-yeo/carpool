@@ -28,7 +28,8 @@ const PassengerHome = () => {
     const passengerSnap = await getDoc(passengerRef);
 
     if (passengerSnap.exists()) {
-      setPassengerData(passengerSnap.data());
+      const data = passengerSnap.data();
+      setPassengerData(data);
     }
     setLoading(false);
   };
@@ -82,44 +83,62 @@ const PassengerHome = () => {
           <Text style={styles.backButtonText}>← Back</Text>
         </Pressable>
         <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
-          <Text style={styles.viewAllText}>View All Rides</Text>
+          <Text style={styles.buttonText}>View All Rides</Text>
         </Pressable>
       </View>
 
       <Text style={styles.header}>
-        Welcome {fname} {lname}
+        Welcome {fname} {lname}!
       </Text>
-      <Text style={styles.info}>Your Address: {address}</Text>
 
-      <View style={styles.textBox}>
-        {driver ? (
-          <>
-            <Text style={styles.subtitle}>
-              Your Driver: {driver.fname} {driver.lname}
-            </Text>
-            <Text style={styles.info}>
-              Pickup Time: {pickupTime || "Not yet assigned"}
-            </Text>
-          </>
-        ) : (
-          <Text style={styles.info}>No driver assigned yet.</Text>
-        )}
+      
+      {driver ? (
+        <>
+        <Text style={styles.sectionTitle}>Car Details for (INSERT DATE):</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Driver Information</Text>
+          <Text style={styles.cardText}>Name: {driver.fname} {driver.lname}</Text>
+          <Text style={styles.cardText}>Phone Number: {driver.phoneNumber}</Text>
 
-        {pickupTime && !acknowledged && (
-          <Pressable style={styles.button} onPress={acknowledgePickup}>
-            <Text style={styles.buttonText}>"Acknowledge Pickup Time"</Text>
-          </Pressable>
-        )}
-
-        <Text style={styles.text}>*If you don't confirm by (insert time), your ride may be replaced.</Text>
-
-        {acknowledged && (
-          <Text style={styles.confirmation}>
-            Thank you. You have acknowledged your pickup time.
+          <Text style={[styles.cardTitle, { marginTop: 16 }]}>Pickup Information</Text>
+          <Text style={styles.cardText}>
+            Pickup Time: {pickupTime || "Not yet assigned"}
           </Text>
-        )}
-      </View>
+          <Text style={styles.cardText}>
+            {address ? `Location: ${address}` : "Pickup location not available yet."}
+          </Text>
+        </View>
+                    
+        {pickupTime && !acknowledged && (
+            <Pressable style={styles.button} onPress={acknowledgePickup}>
+              <Text style={styles.buttonText}>Acknowledge Pickup Time</Text>
+            </Pressable>
+          )}
 
+          {!acknowledged && (
+            <Text style={styles.cardText}>
+              *If you don't confirm by (insert time), your ride may be replaced.
+            </Text>
+          )}
+
+          {acknowledged && (
+            <View style={styles.submissionBanner}>
+              <Text style={styles.submissionText}>
+                Thank you. You have acknowledged your pickup time.
+              </Text>
+            </View>
+            
+          )}
+
+        </>
+
+      ) : (
+        <>
+          <Text style={styles.subtitle}>Car assignments have not been released yet.</Text>
+          <Text style={styles.text}>Please check back later for your pickup details! Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>
+
+        </>
+      )}
       <Pressable style={styles.button} onPress={handleEditSignUp}>
         <Text style={styles.buttonText}>Edit Sign Up</Text>
       </Pressable>
@@ -146,13 +165,14 @@ const styles = StyleSheet.create({
     color: "#007AFF",
   },
   viewAllButton: {
+    backgroundColor: "black",
     padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
-  viewAllText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
+  
   header: {
     fontSize: 22,
     fontWeight: "bold",
@@ -162,27 +182,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
-  confirmation: {
-    marginTop: 20,
-    color: "green",
-    fontWeight: "bold",
-    fontSize: 16,
+  submissionBanner: {
+    backgroundColor: "#e6f4ea",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#28a745",
+  },
+  submissionText: {
+    color: "#2c662d",
+    fontWeight: "600",
+    fontSize: 14,
   },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  textBox: {
-    backgroundColor: '#e4f1ee',
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#999",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-    alignSelf: 'stretch'
   },
   subtitle: {
     fontSize: 18,
@@ -201,7 +217,39 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     textAlign: "center",
-  }
+  },
+  sectionTitle: {
+  fontSize: 20,
+  fontWeight: "600",
+  marginTop: 10,
+  marginBottom: 12,
+  color: "#333",
+  },
+
+  card: {
+    backgroundColor: "#f9f9f9",
+    padding: 16,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.01,
+    shadowRadius: 5,
+    marginBottom: 16,
+    width: "100%",
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
+  },
+
 });
 
 export default PassengerHome;

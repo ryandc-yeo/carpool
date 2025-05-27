@@ -17,7 +17,7 @@ const RidesHome = () => {
     navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
   };
 
-  const viewRide = async () => {
+  const handleViewRide = async () => {
     const driverDoc = await getDoc(doc(db, "Sunday Drivers", phoneNumber));
     if (driverDoc.exists()) {
       navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
@@ -77,9 +77,7 @@ const RidesHome = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Rides Home</Text>
-      <Text>
-        Hello {userData.fname} {userData.lname}
-      </Text>
+      
       <Text style={styles.text}>
         Welcome to the rides page! You can sign up and view available rides
         here.
@@ -104,7 +102,7 @@ const RidesHome = () => {
         <Text style={styles.buttonText}>Sign Up for a Ride</Text>
       </Pressable>
 
-      <Pressable style={styles.button} onPress={viewRide}>
+      <Pressable style={styles.button} onPress={handleViewRide}>
         <Text style={styles.buttonText}>View Ride</Text>
       </Pressable>
     </View>

@@ -10,6 +10,8 @@ const DriverHome = () => {
   const { phoneNumber } = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  
 
   const handleGoBack = () => {
     navigation.navigate("Rides", { phoneNumber: phoneNumber });
@@ -65,6 +67,7 @@ const DriverHome = () => {
 
     alert("Pickup times saved!");
     setPassengers(updatedPassengers);
+    setHasSubmitted(true);
   };
 
   return (
@@ -74,25 +77,43 @@ const DriverHome = () => {
           <Text style={styles.backButtonText}>← Back</Text>
         </Pressable>
         <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
-          <Text style={styles.viewAllText}>View All Rides</Text>
+          <Text style={styles.buttonText}>View All Rides</Text>
         </Pressable>
       </View>
       
       <Text style={styles.header}>Your Passengers</Text>
+      {hasSubmitted && (
+        <View style={styles.submissionBanner}>
+          <Text style={styles.submissionText}>Pickup times submitted successfully.</Text>
+        </View>
+      )}
+
       {passengers.map((p, index) => (
-        <View key={index} style={styles.textBox}>
-          <Text style={styles.name}>
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardTitle}>
             {p.fname} {p.lname}
           </Text>
-          <Text style={styles.address}>{p.address || "No address"} || {p.phoneNumber}</Text>
+
+          <Text style={styles.cardText}>
+            <Text style={{ fontWeight: "600" }}>Address:</Text> {p.address || "Not provided"}
+          </Text> 
+          <Text style={styles.cardText}>
+            <Text style={{ fontWeight: "600" }}>Phone:</Text> {p.phoneNumber}
+          </Text>
+
           <TextInput
             style={styles.input}
             placeholder="Enter pickup time"
+            placeholderTextColor="#D3D3D3" //
             value={pickupTimes[p.phoneNumber] || ""}
             onChangeText={(text) => handleTimeChange(p.phoneNumber, text)}
           />
-          <Text style={styles.status}>
-            Acknowledged: {p.acknowledged ? "YES" : "NO"}
+
+          <Text style={[styles.cardText, { marginTop: 10 }]}>
+            Acknowledged:{" "}
+            <Text style={{ color: p.acknowledged ? "#228B22" : "#cc0000", fontWeight: "600" }}>
+              {p.acknowledged ? "YES" : "NO"}
+            </Text>
           </Text>
         </View>
       ))}
@@ -123,48 +144,29 @@ const styles = StyleSheet.create({
     color: "#007AFF",
   },
   viewAllButton: {
+    backgroundColor: "black",
     padding: 10,
-  },
-  viewAllText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
   header: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
   },
-  textBox: {
-    backgroundColor: '#e4f1ee',
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#999",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-    alignSelf: 'stretch'
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  address: {
-    marginTop: 4,
-    fontStyle: "italic",
-  },
   input: {
     borderColor: "#ccc",
     borderWidth: 1,
-    marginTop: 10,
     padding: 8,
     borderRadius: 6,
+    width: "100%",
+    backgroundColor: "white",
+    fontSize: 15,
+    marginTop: 4,
   },
-  status: {
-    marginTop: 10,
-    fontWeight: "600",
-  },
+  
   button: {
     backgroundColor: "black",
     padding: 10,
@@ -178,6 +180,44 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
   },
+
+  card: {
+    backgroundColor: "#f9f9f9",
+    padding: 16,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.01,
+    shadowRadius: 5,
+    marginBottom: 16,
+    width: "100%",
+  },
+
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
+  },
+
+  submissionBanner: {
+    backgroundColor: "#e6f4ea",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#28a745",
+  },
+  submissionText: {
+    color: "#2c662d",
+    fontWeight: "600",
+    fontSize: 14,
+  }
 });
 
 export default DriverHome;
