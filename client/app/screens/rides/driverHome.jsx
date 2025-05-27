@@ -80,18 +80,27 @@ const DriverHome = () => {
       
       <Text style={styles.header}>Your Passengers</Text>
       {passengers.map((p, index) => (
-        <View key={index} style={styles.textBox}>
-          <Text style={styles.name}>
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardTitle}>
             {p.fname} {p.lname}
           </Text>
-          <Text style={styles.address}>{p.address || "No address"} || {p.phoneNumber}</Text>
+
+          <Text style={styles.cardText}>
+            <Text style={{ fontWeight: "600" }}>Address:</Text> {p.address || "Not provided"}
+          </Text> 
+          <Text style={styles.cardText}>
+            <Text style={{ fontWeight: "600" }}>Phone:</Text> {p.phoneNumber}
+          </Text>
+
           <TextInput
             style={styles.input}
             placeholder="Enter pickup time"
+            placeholderTextColor="#D3D3D3" //
             value={pickupTimes[p.phoneNumber] || ""}
             onChangeText={(text) => handleTimeChange(p.phoneNumber, text)}
           />
-          <Text style={styles.status}>
+
+          <Text style={[styles.cardText, { marginTop: 10 }]}>
             Acknowledged: {p.acknowledged ? "YES" : "NO"}
           </Text>
         </View>
@@ -135,36 +144,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-  textBox: {
-    backgroundColor: '#e4f1ee',
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#999",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-    alignSelf: 'stretch'
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  address: {
-    marginTop: 4,
-    fontStyle: "italic",
-  },
   input: {
     borderColor: "#ccc",
     borderWidth: 1,
-    marginTop: 10,
     padding: 8,
     borderRadius: 6,
+    width: "100%",
+    backgroundColor: "white",
+    fontSize: 15,
+    marginTop: 4,
   },
-  status: {
-    marginTop: 10,
-    fontWeight: "600",
-  },
+  
   button: {
     backgroundColor: "black",
     padding: 10,
@@ -177,6 +167,30 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 18,
+  },
+
+  card: {
+    backgroundColor: "#f9f9f9",
+    padding: 16,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    marginBottom: 16,
+    width: "100%",
+  },
+
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
   },
 });
 

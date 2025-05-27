@@ -133,14 +133,14 @@ const styles = StyleSheet.create({
         color: "#007AFF",
     },
     card: {
-    backgroundColor: "#f7f9fa",
+    backgroundColor: "#f9f9f9",
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 5,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
     marginBottom: 16,
+    width: "100%",
   },
 
   cardTitle: {
