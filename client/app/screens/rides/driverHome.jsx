@@ -77,7 +77,7 @@ const DriverHome = () => {
           <Text style={styles.backButtonText}>← Back</Text>
         </Pressable>
         <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
-          <Text style={styles.viewAllText}>View All Rides</Text>
+          <Text style={styles.buttonText}>View All Rides</Text>
         </Pressable>
       </View>
       
@@ -144,12 +144,12 @@ const styles = StyleSheet.create({
     color: "#007AFF",
   },
   viewAllButton: {
+    backgroundColor: "black",
     padding: 10,
-  },
-  viewAllText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
   header: {
     fontSize: 22,
