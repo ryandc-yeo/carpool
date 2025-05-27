@@ -103,7 +103,7 @@ const RidesHome = () => {
       </Pressable>
 
       <Pressable style={styles.button} onPress={handleViewRide}>
-        <Text style={styles.buttonText}>View Ride</Text>
+        <Text style={styles.buttonText}>View Sunday Rides</Text>
       </Pressable>
     </View>
   );

@@ -121,13 +121,16 @@ const AdminHome = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Rides Home</Text>
+
+            {/* for sunday rides */}
+            <Text style={styles.title}>Sunday Rides</Text>
             <View style={styles.buttonContainer}>
                 <Pressable style={styles.button} onPress={organizeRides}>
-                    <Text style={styles.buttonText}>Generate Car Assignments</Text>
+                    <Text style={styles.buttonText}>Generate Sunday Car Assignments</Text>
                 </Pressable>
 
                 <Pressable style={[styles.button, { backgroundColor: 'red' }]} onPress={resetAssignments}>
-                    <Text style={styles.buttonText}>Reset Assignments</Text>
+                    <Text style={styles.buttonText}>Reset Sunday Assignments</Text>
                 </Pressable>
             </View>
         </View>

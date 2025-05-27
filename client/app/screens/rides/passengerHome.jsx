@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import { doc, getDoc, updateDoc, onSnapshot, getDocs } from "firebase/firestore";
 import db from "../../src/firebase-config";
 
 const PassengerHome = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber } = route.params || {};
+  const [ridesGenerated, setRidesGenerated] = useState(false);
   const [passengerData, setPassengerData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,20 @@ const PassengerHome = () => {
   useEffect(() => {
     fetchPassengerData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const configRef = doc(db, "meta", "config");
+
+      const unsubscribe = onSnapshot(configRef, (configSnap) => {
+        const ridesGenerated =
+          configSnap.exists() && configSnap.data().ridesGenerated;
+        setRidesGenerated(ridesGenerated);
+      });
+
+      return () => unsubscribe(); 
+    }, [])
+  );
 
   const acknowledgePickup = async () => {
     const passengerRef = doc(db, "Sunday Passengers", phoneNumber);
@@ -92,7 +107,7 @@ const PassengerHome = () => {
       </Text>
 
       
-      {driver ? (
+      {driver && ridesGenerated ? (
         <>
         <Text style={styles.sectionTitle}>Car Details for (INSERT DATE):</Text>
         <View style={styles.card}>
@@ -117,7 +132,7 @@ const PassengerHome = () => {
 
           {!acknowledged && (
             <Text style={styles.cardText}>
-              *If you don't confirm by (insert time), your ride may be replaced.
+              *If you don&apos;t confirm by (insert time), your ride may be replaced.
             </Text>
           )}
 
@@ -132,7 +147,12 @@ const PassengerHome = () => {
 
         </>
 
-      ) : (
+      ) : ridesGenerated ? (
+        <View>
+          <Text style={styles.sectionTitle}>Car Details for (INSERT DATE):</Text>
+          <Text> You are on waitlist.</Text>
+        </View>
+      ): (
         <>
           <Text style={styles.subtitle}>Car assignments have not been released yet.</Text>
           <Text style={styles.text}>Please check back later for your pickup details! Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>

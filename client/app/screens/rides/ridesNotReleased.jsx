@@ -20,7 +20,7 @@ const RidesNotReleased = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Hang Tight!</Text>
             <Text style={styles.subtitle}>
-                We're still working on finalizing the rides. Please check back a little later.
+                We&apos;re still working on finalizing the rides. Please check back a little later.
             </Text>
             <Text style={styles.text}>Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>
             <Pressable style={styles.button} onPress={handleGoBack}>
