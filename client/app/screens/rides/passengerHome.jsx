@@ -28,7 +28,8 @@ const PassengerHome = () => {
     const passengerSnap = await getDoc(passengerRef);
 
     if (passengerSnap.exists()) {
-      setPassengerData(passengerSnap.data());
+      const data = passengerSnap.data();
+      setPassengerData(data);
     }
     setLoading(false);
   };
@@ -87,39 +88,47 @@ const PassengerHome = () => {
       </View>
 
       <Text style={styles.header}>
-        Welcome {fname} {lname}
+        Welcome {fname} {lname}!
       </Text>
-      <Text style={styles.info}>Your Address: {address}</Text>
 
-      <View style={styles.textBox}>
-        {driver ? (
-          <>
-            <Text style={styles.subtitle}>
-              Your Driver: {driver.fname} {driver.lname}
-            </Text>
-            <Text style={styles.info}>
-              Pickup Time: {pickupTime || "Not yet assigned"}
-            </Text>
-          </>
-        ) : (
-          <Text style={styles.info}>No driver assigned yet.</Text>
-        )}
-
-        {pickupTime && !acknowledged && (
-          <Pressable style={styles.button} onPress={acknowledgePickup}>
-            <Text style={styles.buttonText}>"Acknowledge Pickup Time"</Text>
-          </Pressable>
-        )}
-
-        <Text style={styles.text}>*If you don't confirm by (insert time), your ride may be replaced.</Text>
-
-        {acknowledged && (
-          <Text style={styles.confirmation}>
-            Thank you. You have acknowledged your pickup time.
+      
+      {driver ? (
+        <View style={styles.textBox}>
+          <Text style={styles.subtitle}>
+            Your Driver: {driver.fname} {driver.lname}
           </Text>
-        )}
-      </View>
+          <Text style={styles.info}>
+            Pickup Time: {pickupTime || "Not yet assigned"}
+          </Text>
+          <Text style={styles.info}>
+            {address ? `Your Pick Up Location: ${address}` : "Pickup location not available yet."}
+          </Text>
 
+          {pickupTime && !acknowledged && (
+            <Pressable style={styles.button} onPress={acknowledgePickup}>
+              <Text style={styles.buttonText}>Acknowledge Pickup Time</Text>
+            </Pressable>
+          )}
+
+          {!acknowledged && (
+            <Text style={styles.text}>
+              *If you don't confirm by (insert time), your ride may be replaced.
+            </Text>
+          )}
+
+          {acknowledged && (
+            <Text style={styles.confirmation}>
+              Thank you. You have acknowledged your pickup time.
+            </Text>
+          )}
+        </View>
+      ) : (
+        <>
+          <Text style={styles.subtitle}>Car assignments have not been released yet.</Text>
+          <Text style={styles.text}>Please check back later for your pickup details! Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>
+          
+        </>
+      )}
       <Pressable style={styles.button} onPress={handleEditSignUp}>
         <Text style={styles.buttonText}>Edit Sign Up</Text>
       </Pressable>
