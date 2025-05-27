@@ -19,9 +19,8 @@ const RidesSignUp = () => {
   const sundayOptions = ["Early (8am)", "Regular (10:45am)"];
   const fellyOptions = ["Yes", "No, go back early"];
   const addressOptions = [
-    "Hill (De Neve Turn Around)",
-    "North of Wilshire",
-    "South of Wilshire",
+    { label: "Hill (De Neve Turn Around)", value: "Hill" },
+  { label: "Apartment (Enter Address)", value: "Apartment" }
   ];
 
   const [role, setRole] = useState("");
@@ -29,6 +28,7 @@ const RidesSignUp = () => {
   const [sunday, setSunday] = useState("");
   const [felly, setFelly] = useState("");
   const [address, setAddress] = useState("");
+  const [customAddress, setCustomAddress] = useState ("")
   const [isNewcomer, setisNewcomer] = useState(false);
   const [acknowledge, setAcknowledge] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -56,6 +56,8 @@ const RidesSignUp = () => {
       return;
     }
 
+    const finalAddress = address === "Apartment" ? customAddress : address;
+
     const timeValue = (slot) =>
       slot === "Early (5pm)" || slot === "Early (8am)" ? "early" : "regular";
 
@@ -66,7 +68,7 @@ const RidesSignUp = () => {
           fname: userData.fname,
           lname: userData.lname,
           grade: userData.grade,
-          address: address,
+          address: finalAddress,
           time: timeValue(friday),
           newcomer: isNewcomer,
         },
@@ -79,7 +81,7 @@ const RidesSignUp = () => {
           fname: userData.fname,
           lname: userData.lname,
           grade: userData.grade,
-          address: address,
+          address: finalAddress,
           time: timeValue(friday),
           newcomer: isNewcomer,
         },
@@ -94,7 +96,7 @@ const RidesSignUp = () => {
           fname: userData.fname,
           lname: userData.lname,
           grade: userData.grade,
-          address: address,
+          address: finalAddress,
           time: timeValue(sunday),
           felly: felly,
           newcomer: isNewcomer,
@@ -108,7 +110,7 @@ const RidesSignUp = () => {
           fname: userData.fname,
           lname: userData.lname,
           grade: userData.grade,
-          address: address,
+          address: finalAddress,
           time: timeValue(sunday),
           felly: felly,
           newcomer: isNewcomer,
@@ -256,19 +258,28 @@ const RidesSignUp = () => {
         <View style={styles.question}>
           <Text style={styles.subtitle}>Where are you located?</Text>
           {addressOptions.map((a) => (
-            <View key={a} style={styles.radioRow}>
+            <View key={a.value} style={styles.radioRow}>
               <Pressable
                 style={[
                   styles.radioButtonOuter,
-                  address === a && styles.radioButtonOuterSelected,
+                  address === a.value && styles.radioButtonOuterSelected,
                 ]}
-                onPress={() => setAddress(a)}
+                onPress={() => setAddress(a.value)}
               >
-                {address === a && <View style={styles.radioButtonInner} />}
+                {address === a.value && <View style={styles.radioButtonInner} />}
               </Pressable>
-              <Text style={styles.radioText}>{a}</Text>
+              <Text style={styles.radioText}>{a.label}</Text>
             </View>
           ))}
+          {address === "Apartment" && (
+            <TextInput
+              style={styles.input}
+              placeholder="Enter apartment address"
+              placeholderTextColor="#888"
+              value={customAddress}
+              onChangeText={setCustomAddress}
+            />
+          )}
         </View>
 
         <View style={styles.question}>
