@@ -25,7 +25,7 @@ const PhoneVerification = () => {
                 }
                 else {
                     alert("Verification code pressed with code: " + verificationCode);
-                    navigation.navigate("Profile", { phoneNumber: phoneNumber });
+                    navigation.navigate("Profile Signup", { phoneNumber: phoneNumber });
                 }
             }
             catch (err) {

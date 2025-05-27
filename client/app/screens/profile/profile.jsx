@@ -5,16 +5,31 @@ import db from "../../src/firebase-config";
 import { doc , setDoc } from "firebase/firestore";
 
 const ProfileHome = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber } = route.params;
 
-  
+  const [userData, setUserData] = useState("");
+
+  const getUser = async () => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", phoneNumber));
+      setUserData(userDoc.data());
+    } catch (err) {
+      console.error("Error checking Firestore: ", err);
+      alert("Something wrong. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+      (async () => {
+        await getUser();
+      })();
+    }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hello!</Text>
-
+      <Text style={styles.title}>Welcome! Create your profile</Text>
     </View>
   );
 };
