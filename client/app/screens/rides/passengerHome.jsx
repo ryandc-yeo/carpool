@@ -116,15 +116,18 @@ const PassengerHome = () => {
           )}
 
           {!acknowledged && (
-            <Text style={styles.text}>
+            <Text style={styles.cardText}>
               *If you don't confirm by (insert time), your ride may be replaced.
             </Text>
           )}
 
           {acknowledged && (
-            <Text style={styles.confirmation}>
-              Thank you. You have acknowledged your pickup time.
-            </Text>
+            <View style={styles.submissionBanner}>
+              <Text style={styles.submissionText}>
+                Thank you. You have acknowledged your pickup time.
+              </Text>
+            </View>
+            
           )}
 
         </>
@@ -178,11 +181,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
-  confirmation: {
-    marginTop: 20,
-    color: "green",
-    fontWeight: "bold",
-    fontSize: 16,
+  submissionBanner: {
+    backgroundColor: "#e6f4ea",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#28a745",
+  },
+  submissionText: {
+    color: "#2c662d",
+    fontWeight: "600",
+    fontSize: 14,
   },
   center: {
     flex: 1,

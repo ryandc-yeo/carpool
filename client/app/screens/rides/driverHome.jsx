@@ -10,6 +10,8 @@ const DriverHome = () => {
   const { phoneNumber } = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  
 
   const handleGoBack = () => {
     navigation.navigate("Rides", { phoneNumber: phoneNumber });
@@ -65,6 +67,7 @@ const DriverHome = () => {
 
     alert("Pickup times saved!");
     setPassengers(updatedPassengers);
+    setHasSubmitted(true);
   };
 
   return (
@@ -79,6 +82,12 @@ const DriverHome = () => {
       </View>
       
       <Text style={styles.header}>Your Passengers</Text>
+      {hasSubmitted && (
+        <View style={styles.submissionBanner}>
+          <Text style={styles.submissionText}>Pickup times submitted successfully.</Text>
+        </View>
+      )}
+
       {passengers.map((p, index) => (
         <View key={index} style={styles.card}>
           <Text style={styles.cardTitle}>
@@ -101,7 +110,10 @@ const DriverHome = () => {
           />
 
           <Text style={[styles.cardText, { marginTop: 10 }]}>
-            Acknowledged: {p.acknowledged ? "YES" : "NO"}
+            Acknowledged:{" "}
+            <Text style={{ color: p.acknowledged ? "#228B22" : "#cc0000", fontWeight: "600" }}>
+              {p.acknowledged ? "YES" : "NO"}
+            </Text>
           </Text>
         </View>
       ))}
@@ -192,6 +204,20 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 4,
   },
+
+  submissionBanner: {
+    backgroundColor: "#e6f4ea",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: "#28a745",
+  },
+  submissionText: {
+    color: "#2c662d",
+    fontWeight: "600",
+    fontSize: 14,
+  }
 });
 
 export default DriverHome;
