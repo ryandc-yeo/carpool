@@ -1,18 +1,23 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {useAuth} from "../admin/AuthContext";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc , setDoc } from "firebase/firestore";
+import { doc , setDoc, getDoc } from "firebase/firestore";
 
 const ProfileHome = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber } = route.params;
+  const { phoneNumber, setPhoneNumber } = useAuth();
 
   const [userData, setUserData] = useState("");
 
   const getUser = async () => {
     try {
+      if (!phoneNumber) {
+        alert("Missing phone number. Cannot load user.");
+        return;
+      }
       const userDoc = await getDoc(doc(db, "users", phoneNumber));
       setUserData(userDoc.data());
     } catch (err) {
@@ -29,7 +34,30 @@ const ProfileHome = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome! Create your profile</Text>
+      <Text style={styles.title}>
+        Welcome {userData?.fname} {userData?.lname}!
+      </Text>
+      <Pressable
+        style={styles.loginButton}
+        onPress={() => navigation.navigate("Profile SignUp", { phoneNumber: phoneNumber, isEdit: true, })}
+      >
+        <Text style={styles.loginButtonText}>Edit Profile</Text>
+      </Pressable>
+
+      <Pressable
+        style={[styles.loginButton, { backgroundColor: '#d9534f' }]}
+        onPress={() => {
+          setPhoneNumber(null);
+          setUserData(null);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          });
+        }}
+      >
+        <Text style={styles.loginButtonText}>Log Out</Text>
+      </Pressable>
+
     </View>
   );
 };

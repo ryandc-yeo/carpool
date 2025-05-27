@@ -1,8 +1,8 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc , setDoc } from "firebase/firestore";
+import { doc , setDoc, getDoc } from "firebase/firestore";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
@@ -19,7 +19,7 @@ const Profile = () => {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber } = route.params;
+  const { phoneNumber, isEdit} = route.params;
 
   const createUser = async () => {
     const finalAddress = newAddress === "Apartment" ? customAddress : newAddress;
@@ -32,9 +32,37 @@ const Profile = () => {
     }, { merge: true });
   };
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const docRef = doc(db, "users", phoneNumber);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setFname(data.fname || "");
+          setLname(data.lname || "");
+          setGrade(data.grade || "");
+          if (data.address === "Hill") {
+            setAddress("Hill");
+          } else {
+            setAddress("Apartment");
+            setCustomAddress(data.address || "");
+          }
+        }
+      } catch (err) {
+        console.error("Error loading user data:", err);
+      }
+    };
+
+    loadUserData();
+  } , [phoneNumber]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome! Create your profile</Text>
+      <Text style={styles.title}>
+        {isEdit ? "Edit Your Profile" : "Welcome! Create your profile"}
+      </Text>
 
       <Text style={styles.subtitle}>
         First Name
@@ -43,6 +71,7 @@ const Profile = () => {
       <TextInput 
         placeholder="First Name"
         style={styles.input}
+        value={newFname}
         onChangeText={(text) => {
           setFname(text);
         }}
@@ -55,6 +84,7 @@ const Profile = () => {
       <TextInput 
         placeholder="Last Name"
         style={styles.input}
+        value={newLname}
         onChangeText={(text) => {
           setLname(text);
         }}
@@ -135,7 +165,9 @@ const Profile = () => {
 
         navigation.navigate("Rides", { phoneNumber: phoneNumber });
       }} style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>Create Profile</Text>
+        <Text style={styles.loginButtonText}>
+          {isEdit ? "Save Profile" : "Create Profile"}
+        </Text>
       </Pressable>
     </View>
   );
