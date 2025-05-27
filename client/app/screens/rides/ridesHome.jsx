@@ -77,9 +77,7 @@ const RidesHome = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Rides Home</Text>
-      <Text>
-        Hello {userData.fname} {userData.lname}
-      </Text>
+      
       <Text style={styles.text}>
         Welcome to the rides page! You can sign up and view available rides
         here.
