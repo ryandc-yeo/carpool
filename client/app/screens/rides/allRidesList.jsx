@@ -127,8 +127,9 @@ const AllRidesList = () => {
             <View style={styles.card}>
                 <Text style={styles.cardTitle}>Waitlist</Text>
                 {waitlist.map((passenger, index) => (
-                    <Text key={index} style={[styles.cardText]}>
+                    <Text key={index} style={[styles.cardText, passenger.id === phoneNumber && {fontWeight: "bold", color: "#007AFF"}]}>
                         {passenger.fname} {passenger.lname}
+                        {passenger.id === phoneNumber && " (You)"}
                     </Text>
                 ))}
             </View>
