@@ -6,7 +6,11 @@ import { doc , setDoc } from "firebase/firestore";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
-  const addressOptions = ["Hill (De Neve Turn Around)", "North of Wilshire", "South of Wilshire"];
+  const addressOptions = [
+  { label: "Hill (De Neve Turn Around)", value: "Hill" },
+  { label: "Apartment (Enter Address)", value: "Apartment" },
+  ];
+  const [customAddress, setCustomAddress] = useState("");
 
   const [newFname, setFname] = useState("");
   const [newLname, setLname] = useState("");
@@ -18,20 +22,24 @@ const Profile = () => {
   const { phoneNumber } = route.params;
 
   const createUser = async () => {
+    const finalAddress = newAddress === "Apartment" ? customAddress : newAddress;
+
     await setDoc(doc(db, "users", phoneNumber), { 
       fname: newFname,
       lname: newLname,
       grade: newGrade,
-      address: newAddress
+      address: finalAddress
     }, { merge: true });
   };
-  
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome! Create your profile</Text>
 
-      <Text style={styles.subtitle}>First Name</Text>
+      <Text style={styles.subtitle}>
+        First Name
+        <Text style={styles.required}> *</Text>
+      </Text>
       <TextInput 
         placeholder="First Name"
         style={styles.input}
@@ -40,7 +48,10 @@ const Profile = () => {
         }}
       />
 
-      <Text style={styles.subtitle}>Last Name</Text>
+      <Text style={styles.subtitle}>
+        Last Name
+        <Text style={styles.required}> *</Text>
+      </Text>
       <TextInput 
         placeholder="Last Name"
         style={styles.input}
@@ -49,11 +60,17 @@ const Profile = () => {
         }}
       />
 
-      <Text style={styles.subtitle}>Phone Number</Text>
+      <Text style={styles.subtitle}>
+        Phone Number
+        <Text style={styles.required}> *</Text>
+      </Text>
       <Text>{phoneNumber || ''}</Text>
 
 
-      <Text style={styles.subtitle}>Grade</Text>
+      <Text style={styles.subtitle}>
+        Grade
+        <Text style={styles.required}> *</Text>
+      </Text>
       {gradeOptions.map((g) => (
         <View key={g} style={styles.radioRow}>
           <Pressable
@@ -69,24 +86,53 @@ const Profile = () => {
         </View>
       ))}
 
-      <Text style={styles.subtitle}>Address</Text>
+      <Text style={styles.subtitle}>
+        Address
+        <Text style={styles.required}> *</Text>
+      </Text>
       {addressOptions.map((a) => (
-        <View key={a} style={styles.radioRow}>
+        <View key={a.value} style={styles.radioRow}>
           <Pressable
             style={[
               styles.radioButtonOuter,
-              newAddress === a && styles.radioButtonOuterSelected,
+              newAddress === a.value && styles.radioButtonOuterSelected,
             ]}
-            onPress={() => setAddress(a)}
+            onPress={() => setAddress(a.value)}
           >
-            {newAddress === a && <View style={styles.radioButtonInner} />}
+            {newAddress === a.value && <View style={styles.radioButtonInner} />}
           </Pressable>
-          <Text style={styles.radioText}>{a}</Text>
+          <Text style={styles.radioText}>{a.label}</Text>
         </View>
       ))}
+      {newAddress === "Apartment" && (
+        <TextInput
+          style={styles.input}
+          placeholder="Enter apartment address"
+          placeholderTextColor="#888"
+          value={customAddress}
+          onChangeText={setCustomAddress}
+        />
+      )}
 
       <Pressable onPress={async () => {
+        if (!newFname.trim()) {
+          alert("First name is required.");
+          return;
+        }
+        if (!newLname.trim()) {
+          alert("Last name is required.");
+          return;
+        }
+        if (!newGrade) {
+          alert("Please select your grade.");
+          return;
+        }
+        if (!newAddress || (newAddress === "Apartment" && !customAddress.trim())) {
+          alert("Please provide your address.");
+          return;
+        }
         await createUser();
+
         navigation.navigate("Rides", { phoneNumber: phoneNumber });
       }} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Create Profile</Text>
@@ -160,6 +206,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
   },
+  required: {
+  color: "#f01e2c",
+  },
+
 });
 
 export default Profile;
