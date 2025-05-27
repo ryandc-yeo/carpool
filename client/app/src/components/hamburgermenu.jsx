@@ -33,7 +33,8 @@ const allScreens = [
 ];
 
 // visible screens
-const visibleScreenNames = ['Login', 'Rides', 'Chat', 'Admin Home'];
+const visibleScreenNames = ['Rides', 'Admin Home'];
+const hideDrawerScreens = ['Login', 'Phone Verification'];
 
 // navigator
 const DrawerNavigator = () => {
@@ -48,6 +49,9 @@ const DrawerNavigator = () => {
             drawerIcon: ({ color }) => (
               <Ionicons name={screen.icon} size={22} color={color} />
             ),
+            // hide drawer completely for login screens
+            swipeEnabled: !hideDrawerScreens.includes(screen.name), 
+            headerShown: !hideDrawerScreens.includes(screen.name),
             // Hide screen if not in the visible list
             drawerItemStyle: visibleScreenNames.includes(screen.name)
               ? undefined
