@@ -33,7 +33,7 @@ const allScreens = [
 ];
 
 // visible screens
-const visibleScreenNames = ['Login', 'Rides', 'Chat', 'Admin Home'];
+const visibleScreenNames = ['Login', 'Rides', 'Admin Home'];
 
 // navigator
 const DrawerNavigator = () => {

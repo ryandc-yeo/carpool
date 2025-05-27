@@ -10,6 +10,7 @@ const AllRidesList = () => {
     const { phoneNumber, role } = route.params || {};
 
     const [carGroups, setCarGroups] = useState([]);
+    const [waitlist, setWaitlist] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const handleGoBack = () => {
@@ -46,6 +47,19 @@ const AllRidesList = () => {
                     };
                 });
 
+                const passengersSnapshot = await getDocs(collection(db, "Sunday Passengers"));
+                const waitlist = passengersSnapshot.docs.map(docSnap =>{
+                    const data = docSnap.data(); 
+                    if (data.driver == null) {
+                        return {
+                            id: docSnap.id,
+                            ...data
+                        };
+                    }
+                    return null;
+                }).filter(p => p !== null);
+
+                setWaitlist(waitlist);
                 setCarGroups(groups);
                 setLoading(false);
             });
@@ -110,6 +124,14 @@ const AllRidesList = () => {
                     )}
                 </View>
             ))}
+            <View style={styles.card}>
+                <Text style={styles.cardTitle}>Waitlist</Text>
+                {waitlist.map((passenger, index) => (
+                    <Text key={index} style={[styles.cardText]}>
+                        {passenger.fname} {passenger.lname}
+                    </Text>
+                ))}
+            </View>
         </ScrollView>
     );
 };
