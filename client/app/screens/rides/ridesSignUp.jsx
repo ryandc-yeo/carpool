@@ -33,6 +33,7 @@ const RidesSignUp = () => {
   const [acknowledge, setAcknowledge] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [capacity, setCapacity] = useState();
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -70,6 +71,7 @@ const RidesSignUp = () => {
           grade: userData.grade,
           address: finalAddress,
           time: timeValue(friday),
+          capacity: capacity,
           newcomer: isNewcomer,
         },
         { merge: true }
@@ -98,6 +100,7 @@ const RidesSignUp = () => {
           grade: userData.grade,
           address: finalAddress,
           time: timeValue(sunday),
+          capacity: capacity,
           felly: felly,
           newcomer: isNewcomer,
         },
@@ -167,7 +170,10 @@ const RidesSignUp = () => {
         </View>
 
         <View style={styles.question}>
-          <Text style={styles.subtitle}>Are you a...</Text>
+          <Text style={styles.subtitle}>
+            Are you a...
+            <Text style={styles.required}> *</Text>
+          </Text>
           {roleOptions.map((r) => (
             <View key={r} style={styles.radioRow}>
               <Pressable
@@ -182,18 +188,28 @@ const RidesSignUp = () => {
               <Text style={styles.radioText}>{r}</Text>
             </View>
           ))}
-        </View>
-
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            If you are a driver, how many people can you drive (excluding you?){" "}
-          </Text>
-          <TextInput placeholder="Input here" style={styles.input} />
+          {role === "Driver" && (
+            <>
+              <Text style={[styles.subtitle, { marginTop: 20 }]}>
+                How many passengers can you drive? (Excluding yourself)
+                <Text style={styles.required}> *</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., 3"
+                placeholderTextColor="#888"
+                keyboardType="numeric"
+                value={capacity}
+                onChangeText={setCapacity}
+              />
+            </>
+          )}
         </View>
 
         <View style={styles.question}>
           <Text style={styles.subtitle}>
             Select which days you want a ride:
+            <Text style={styles.required}> *</Text>
           </Text>
           <View style={styles.horizontalGroup}>
             <View>
@@ -237,6 +253,7 @@ const RidesSignUp = () => {
         <View style={styles.question}>
           <Text style={styles.subtitle}>
             Stay for lunch or go back immediately?
+            <Text style={styles.required}> *</Text>
           </Text>
 
           {fellyOptions.map((f) => (
@@ -256,7 +273,11 @@ const RidesSignUp = () => {
         </View>
 
         <View style={styles.question}>
-          <Text style={styles.subtitle}>Where are you located?</Text>
+          <Text style={styles.subtitle}>
+            Where are you located?
+            <Text style={styles.required}> *</Text>
+          </Text>
+          
           {addressOptions.map((a) => (
             <View key={a.value} style={styles.radioRow}>
               <Pressable
@@ -309,6 +330,7 @@ const RidesSignUp = () => {
             advance. Failure to do so will first result in a warning strike;
             repeated failure will lead to suspension from receiving rides from
             the church for the remainder of the semester/quarter.{" "}
+            <Text style={styles.required}> *</Text>
           </Text>
           <View style={styles.section}>
             <Checkbox
@@ -334,17 +356,41 @@ const RidesSignUp = () => {
         <Pressable
           style={styles.button}
           onPress={async () => {
+            // Make sure all requried questions are filled out
+            if (!role) {
+              alert("Please select whether you are a Passenger or Driver.");
+              return;
+            }
+            if (role === "Driver" && (!capacity || capacity.trim() === "")) {
+              alert("Please enter how many passengers you can drive.");
+              return;
+            }
+
+            if (!friday && !sunday) {
+              alert("Please select at least one day you want a ride.");
+              return;
+            }
+
+            if (!felly) {
+              alert("Please select whether you are staying for lunch or going back early.");
+              return;
+            }
+
+            if (!address || (address === "Apartment" && customAddress.trim() === "")) {
+              alert("Please specify your pickup location.");
+              return;
+            }
+
+            if (!acknowledge) {
+              alert("You must acknowledge the ride commitment policy.");
+              return;
+            }
+
             const success = await addToRides();
             if (success) {
-              if (role === "Driver") {
-                navigation.navigate("Driver Home", {
-                  phoneNumber: phoneNumber,
-                });
-              } else {
-                navigation.navigate("Passenger Home", {
-                  phoneNumber: phoneNumber,
-                });
-              }
+              navigation.navigate(role === "Driver" ? "Driver Home" : "Passenger Home", {
+                phoneNumber,
+              });
             } else {
               alert("Could not submit. Please fill all required fields.");
             }
@@ -467,6 +513,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     textAlign: "center",
+  },
+  required: {
+    color: "#f01e2c", // red
   },
 });
 
