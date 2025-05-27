@@ -30,6 +30,30 @@ const Profile = () => {
       grade: newGrade,
       address: finalAddress
     }, { merge: true });
+
+    const rideCollections = [
+    "Friday Passengers",
+    "Friday Drivers",
+    "Sunday Passengers",
+    "Sunday Drivers"
+    ];
+
+    // 3. Loop and update user data in each ride record
+    for (const collection of rideCollections) {
+      const ref = doc(db, collection, phoneNumber);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        await setDoc(ref, {
+          fname: newFname,
+          lname: newLname,
+          grade: newGrade,
+          address: finalAddress
+        }, { merge: true });
+      }
+    }
+
+
   };
 
   useEffect(() => {
