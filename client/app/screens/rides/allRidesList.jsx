@@ -112,11 +112,28 @@ const styles = StyleSheet.create({
         color: "#007AFF",
     },
     card: {
-        backgroundColor: "#f0f0f0",
-        borderRadius: 10,
-        padding: 16,
-        marginBottom: 16
-    },
+    backgroundColor: "#f7f9fa",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    marginBottom: 16,
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
+  },
     title: {
         fontSize: 18,
         fontWeight: "bold"

@@ -93,18 +93,23 @@ const PassengerHome = () => {
 
       
       {driver ? (
-        <View style={styles.textBox}>
-          <Text style={styles.subtitle}>
-            Your Driver: {driver.fname} {driver.lname}
-          </Text>
-          <Text style={styles.info}>
+        <>
+        <Text style={styles.sectionTitle}>Car Details for (INSERT DATE):</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Driver Information</Text>
+          <Text style={styles.cardText}>Name: {driver.fname} {driver.lname}</Text>
+          <Text style={styles.cardText}>Phone Number: {driver.phoneNumber}</Text>
+
+          <Text style={[styles.cardTitle, { marginTop: 16 }]}>Pickup Information</Text>
+          <Text style={styles.cardText}>
             Pickup Time: {pickupTime || "Not yet assigned"}
           </Text>
-          <Text style={styles.info}>
-            {address ? `Your Pick Up Location: ${address}` : "Pickup location not available yet."}
+          <Text style={styles.cardText}>
+            {address ? `Location: ${address}` : "Pickup location not available yet."}
           </Text>
-
-          {pickupTime && !acknowledged && (
+        </View>
+                    
+        {pickupTime && !acknowledged && (
             <Pressable style={styles.button} onPress={acknowledgePickup}>
               <Text style={styles.buttonText}>Acknowledge Pickup Time</Text>
             </Pressable>
@@ -121,12 +126,14 @@ const PassengerHome = () => {
               Thank you. You have acknowledged your pickup time.
             </Text>
           )}
-        </View>
+
+        </>
+
       ) : (
         <>
           <Text style={styles.subtitle}>Car assignments have not been released yet.</Text>
           <Text style={styles.text}>Please check back later for your pickup details! Rides are tentatively updated weekly at 8:00am Friday morning and 6:00pm Saturday night.</Text>
-          
+
         </>
       )}
       <Pressable style={styles.button} onPress={handleEditSignUp}>
@@ -182,17 +189,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  textBox: {
-    backgroundColor: '#e4f1ee',
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#999",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-    alignSelf: 'stretch'
-  },
   subtitle: {
     fontSize: 18,
     marginBottom: 10, 
@@ -210,7 +206,39 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     textAlign: "center",
-  }
+  },
+  sectionTitle: {
+  fontSize: 20,
+  fontWeight: "600",
+  marginTop: 10,
+  marginBottom: 12,
+  color: "#333",
+  },
+
+  card: {
+    backgroundColor: "#f7f9fa",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    marginBottom: 16,
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#444",
+  },
+
+  cardText: {
+    fontSize: 15,
+    color: "#555",
+    marginBottom: 4,
+  },
+
 });
 
 export default PassengerHome;
