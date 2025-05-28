@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {useAuth} from "../admin/AuthContext";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc , setDoc, getDoc } from "firebase/firestore";
+import { doc , setDoc, getDoc, onSnapshot } from "firebase/firestore";
 
 const ProfileHome = () => {
   const navigation = useNavigation();
@@ -27,10 +27,20 @@ const ProfileHome = () => {
   };
 
   useEffect(() => {
-      (async () => {
-        await getUser();
-      })();
-    }, [userData]);
+    if (!phoneNumber) return;
+      const unsubscribe = onSnapshot(doc(db, "users", phoneNumber), (docSnap) => {
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        } else {
+          setUserData(null);
+        }
+      });
+
+    return () => unsubscribe(); 
+  }, [phoneNumber]);
+
+  
+
 
   return (
     <View style={styles.container}>

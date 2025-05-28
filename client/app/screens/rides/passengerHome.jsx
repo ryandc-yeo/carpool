@@ -36,8 +36,19 @@ const PassengerHome = () => {
   };
 
   useEffect(() => {
-    fetchPassengerData();
-  }, [passengerData]);
+      if (!phoneNumber) return;
+
+    const unsubscribe = onSnapshot(doc(db, "Sunday Passengers", phoneNumber), (docSnap) => {
+      if (docSnap.exists()) {
+        setPassengerData(docSnap.data());
+      } else {
+        setPassengerData(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [phoneNumber]);
 
   useFocusEffect(
     useCallback(() => {

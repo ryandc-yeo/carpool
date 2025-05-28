@@ -43,9 +43,17 @@ const RidesSignUp = () => {
     (async () => {
       const data = await fetchUserData(phoneNumber);
       setUserData(data);
+      if (data.address) {
+        if (data.address === "Hill (De Neve Turn Around)" || data.address === "Hill") {
+          setAddress("Hill");
+        } else {
+          setAddress("Apartment");
+          setCustomAddress(data.address);
+        }
+      }
       setLoadingData(false);
     })();
-  }, []);
+  }, [userData]);
 
   const handleGoBack = () => {
     navigation.navigate("Rides", { phoneNumber });
