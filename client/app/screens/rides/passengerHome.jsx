@@ -37,7 +37,7 @@ const PassengerHome = () => {
 
   useEffect(() => {
     fetchPassengerData();
-  }, []);
+  }, [passengerData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -88,8 +88,14 @@ const PassengerHome = () => {
     );
   }
 
-  const { fname, lname, address, pickupTime, acknowledged, driver } =
-    passengerData;
+  const {
+    fname = "",
+    lname = "",
+    address = "",
+    pickupTime = "",
+    acknowledged = false,
+    driver = null,
+  } = passengerData || {};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

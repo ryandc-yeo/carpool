@@ -30,7 +30,7 @@ const ProfileHome = () => {
       (async () => {
         await getUser();
       })();
-    }, []);
+    }, [userData]);
 
   return (
     <View style={styles.container}>

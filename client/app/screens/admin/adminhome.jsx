@@ -93,7 +93,9 @@ const AdminHome = () => {
             for (const docSnap of passengersSnapshot.docs) {
                 const passengerRef = doc(db, "Sunday Passengers", docSnap.id);
                 await updateDoc(passengerRef, {
-                    driver: null
+                    driver: null,
+                    acknowledged: false,
+                    pickupTime:"",
                 });
             }
 
