@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import React, {useState} from "react";
+import {useAuth} from "../admin/AuthContext";
 import { useNavigation, useRoute} from "@react-navigation/native";
 import db from "../../src/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
@@ -9,6 +10,7 @@ const PhoneVerification = () => {
     const [verificationCode, setVerificationCode] = useState("");
     const route = useRoute();
     const {phoneNumber} = route.params;
+    const {setPhoneNumber} = useAuth();
     const navigation = useNavigation();
 
     const handleVerification = async () => {
@@ -18,6 +20,7 @@ const PhoneVerification = () => {
 
             try {
                 const userDoc = await getDoc(doc(db, "users", phoneNumber));
+                setPhoneNumber(phoneNumber);
 
                 if (userDoc.exists()) {
                     alert("Welcome " + userDoc.data().fname + " " + userDoc.data().lname + "!");
@@ -25,7 +28,7 @@ const PhoneVerification = () => {
                 }
                 else {
                     alert("Verification code pressed with code: " + verificationCode);
-                    navigation.navigate("Profile", { phoneNumber: phoneNumber });
+                    navigation.navigate("Profile SignUp", { phoneNumber: phoneNumber });
                 }
             }
             catch (err) {

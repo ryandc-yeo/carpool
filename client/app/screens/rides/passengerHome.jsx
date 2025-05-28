@@ -36,8 +36,19 @@ const PassengerHome = () => {
   };
 
   useEffect(() => {
-    fetchPassengerData();
-  }, []);
+      if (!phoneNumber) return;
+
+    const unsubscribe = onSnapshot(doc(db, "Sunday Passengers", phoneNumber), (docSnap) => {
+      if (docSnap.exists()) {
+        setPassengerData(docSnap.data());
+      } else {
+        setPassengerData(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [phoneNumber]);
 
   useFocusEffect(
     useCallback(() => {
@@ -88,8 +99,14 @@ const PassengerHome = () => {
     );
   }
 
-  const { fname, lname, address, pickupTime, acknowledged, driver } =
-    passengerData;
+  const {
+    fname = "",
+    lname = "",
+    address = "",
+    pickupTime = "",
+    acknowledged = false,
+    driver = null,
+  } = passengerData || {};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -124,16 +141,25 @@ const PassengerHome = () => {
           </Text>
         </View>
                     
-        {pickupTime && !acknowledged && (
-            <Pressable style={styles.button} onPress={acknowledgePickup}>
-              <Text style={styles.buttonText}>Acknowledge Pickup Time</Text>
-            </Pressable>
-          )}
-
           {!acknowledged && (
-            <Text style={styles.cardText}>
-              *If you don&apos;t confirm by (insert time), your ride may be replaced.
-            </Text>
+            <>
+              <Pressable
+                style={[
+                  styles.button,
+                  !pickupTime && { backgroundColor: "#888" } // grayed-out style
+                ]}
+                onPress={acknowledgePickup}
+                disabled={!pickupTime}
+              >
+                <Text style={styles.buttonText}>
+                  {pickupTime ? "Acknowledge Pickup Time" : "Pickup Time Not Assigned Yet"}
+                </Text>
+              </Pressable>
+
+              <Text style={styles.cardText}>
+                *If you don&apos;t confirm, your ride may be replaced.
+              </Text>
+            </>
           )}
 
           {acknowledged && (

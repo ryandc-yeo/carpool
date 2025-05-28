@@ -22,15 +22,17 @@ const Login = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Welcome!</Text>
-            <Text style={styles.subtitle}>To get started, enter your mobile number</Text>
-            <Text style={styles.subtitle}>We&apos;ll send you a code you can use to log in or create an account</Text>
+            <Text style={styles.subtitle}>To get started, enter your mobile number</Text>           
+            
+           <Text style={styles.subtitle}>We'll send you a code you can use to log in or create an account</Text>
             <TextInput
                 placeholder="000-000-0000"
                 style={styles.input}
                 onChangeText={text => setPhoneNumber(text)}
+                value={phoneNumber}
                 keyboardType="numeric"
             />
-            <Pressable onPress={() => handleLogin()} style={styles.loginButton}>
+            <Pressable onPress={handleLogin} style={styles.loginButton}>
                 <Text style={styles.loginButtonText}>Next</Text>
             </Pressable>
         </View>
@@ -70,7 +72,20 @@ const styles = StyleSheet.create({
     }, loginButtonText: {
         color: 'white',
         fontSize: 18,
-    }
+    },
+    logoutButton: {
+    backgroundColor: "#f01e2c",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+    marginTop: 20,
+    },
+    logoutButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+    },
 });
 
 export default Login;

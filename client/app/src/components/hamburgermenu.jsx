@@ -1,9 +1,11 @@
 import React from 'react';
+import { AuthProvider } from '../../screens/admin/AuthContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import screens
-import Profile from '../../screens/profile/profile_page';
+import Profile from '../../screens/profile/profileSignup';
+import ProfileHome from '../../screens/profile/profileHome';
 import Login from '../../screens/login/login';
 import PhoneVerification from '../../screens/login/phoneVerification';
 import RidesHome from '../../screens/rides/ridesHome';
@@ -21,7 +23,8 @@ const Drawer = createDrawerNavigator();
 const allScreens = [
   { name: 'Login', component: Login, icon: 'person' },
   { name: 'Phone Verification', component: PhoneVerification, icon: 'call' },
-  { name: 'Profile', component: Profile, icon: 'person' },
+  { name: 'Profile SignUp', component: Profile, icon: 'person' },
+  { name: 'Profile Home', component: ProfileHome, icon: 'person' },
   { name: 'Rides', component: RidesHome, icon: 'car' },
   { name: 'Ride Details', component: RideDetails, icon: 'car-sport' },
   { name: 'Rides SignUp', component: RidesSignUp, icon: 'car-sport' },
@@ -33,33 +36,36 @@ const allScreens = [
 ];
 
 // visible screens
-const visibleScreenNames = ['Rides', 'Admin Home'];
+const visibleScreenNames = ['Profile Home', 'Rides', 'Admin Home'];
 const hideDrawerScreens = ['Login', 'Phone Verification'];
 
 // navigator
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Login">
-      {allScreens.map((screen) => (
-        <Drawer.Screen
-          key={screen.name}
-          name={screen.name}
-          component={screen.component}
-          options={{
-            drawerIcon: ({ color }) => (
-              <Ionicons name={screen.icon} size={22} color={color} />
-            ),
-            // hide drawer completely for login screens
-            swipeEnabled: !hideDrawerScreens.includes(screen.name), 
-            headerShown: !hideDrawerScreens.includes(screen.name),
-            // Hide screen if not in the visible list
-            drawerItemStyle: visibleScreenNames.includes(screen.name)
-              ? undefined
-              : { display: 'none' },
-          }}
-        />
-      ))}
-    </Drawer.Navigator>
+    <AuthProvider>
+      <Drawer.Navigator initialRouteName="Login">
+            {allScreens.map((screen) => (
+              <Drawer.Screen
+                key={screen.name}
+                name={screen.name}
+                component={screen.component}
+                options={{
+                  drawerIcon: ({ color }) => (
+                    <Ionicons name={screen.icon} size={22} color={color} />
+                  ),
+                  // hide drawer completely for login screens
+                  swipeEnabled: !hideDrawerScreens.includes(screen.name), 
+                  headerShown: !hideDrawerScreens.includes(screen.name),
+                  // Hide screen if not in the visible list
+                  drawerItemStyle: visibleScreenNames.includes(screen.name)
+                    ? undefined
+                    : { display: 'none' },
+                }}
+              />
+            ))}
+          </Drawer.Navigator>
+      </AuthProvider>
+
   );
 };
 

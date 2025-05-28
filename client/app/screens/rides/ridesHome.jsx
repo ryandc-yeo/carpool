@@ -70,7 +70,7 @@ const RidesHome = () => {
 
   useEffect(() => {
     (async () => {
-      await getUser();
+      await getUser(); 
     })();
   }, []);
 
