@@ -109,6 +109,8 @@ const AllRidesList = () => {
                     <Text style={styles.backButtonText}>← Back</Text>
                 </Pressable>
             </View>
+            <Text style={styles.title}>Sunday Rides</Text>
+
             {carGroups.map((group, index) => (
                 <View key={index} style={styles.card}>
                     <Text style={styles.cardTitle}>🚗 Car {index + 1} - {formatTime(group.driver.time)} - {formatFellyDisplay(group.driver.felly)} </Text>
@@ -170,7 +172,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
     },
     backButton: {
         padding: 10,
@@ -203,8 +204,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
     title: {
-        fontSize: 18,
-        fontWeight: "bold"
+        fontSize: 20,
+        textAlign: "center",
+        fontWeight: "bold", 
+        marginBottom: 20,
     },
     driver: {
         marginTop: 8,
