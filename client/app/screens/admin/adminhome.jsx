@@ -23,23 +23,89 @@ const AdminHome = () => {
         return { drivers, passengers };
     };
 
+    // car assignments
+    // 1. same pickup time: "early"
+    // 2. same felly: "felly" or "no felly"
+    // 3. location: "hill", "south of wilshire", "north of wilshire"
     const assignCars = (drivers, passengers) => {
-        const shuffledPassengers = passengers.sort(() => 0.5 - Math.random());
         const cars = [];
+        let unassignedPassengers = [...passengers];
 
-        let passengerIndex = 0;
+        // prioritize early drivers first
+        const sortedDrivers = drivers.sort((a,b) => {
+            if (a.time === "early" && b.time !== "early") return -1; 
+            if (a.time === "early" && b.time === "early") return 1;
+            return 0;
+        })
 
-        for (let i = 0; i < drivers.length; i++) {
+        for (let i = 0; i < sortedDrivers.length; i++) {
+            const driver = sortedDrivers[i];
             const car = {
-                driver: drivers[i],
+                driver: driver,
                 passengers: []
             };
 
-            for (let j = 0; j < 4 && passengerIndex < shuffledPassengers.length; j++) {
-                car.passengers.push(shuffledPassengers[passengerIndex++]);
+            const priorityGroups = [];
+
+            if (driver.time === "early") {
+                // early drivers need to have early passengers
+                const earlyPassengers = unassignedPassengers.filter(p => p.time === "early");
+                const regularPassengers = unassignedPassengers.filter(p => p.time !== "early");
+                priorityGroups.push(
+                    // 1. early + same felly + same location
+                    earlyPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    // 2. early + same felly + diff location
+                    earlyPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    // 3. early + diff felly + same location
+                    earlyPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    // 4. early + diff felly + diff location
+                    earlyPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location),
+                    // 5. reg + same felly + same location
+                    regularPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    // 6. reg + same felly + diff location
+                    regularPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    // 7. reg + diff felly + same location
+                    regularPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    // 8. reg + diff felly + diff location
+                    regularPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location)
+                ); 
+            } else {
+                // regular drivers prioritize by felly and location only
+                priorityGroups.push(
+                    // 1. same felly + same location
+                    unassignedPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    // 2. same felly + diff location
+                    unassignedPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    // 3. diff felly + same location
+                    unassignedPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    // 4. diff felly + diff location
+                    unassignedPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location)
+                );
             }
 
+            let capacity = driver.capacity || 4;
+            let assignedCount = 0;
+            for (const group of priorityGroups) {
+                if (assignedCount >= capacity) break;
+                for (const passenger of group) {
+                    if (assignedCount >= capacity) break;
+
+                    // remove assigned passenger from unassigned list
+                    if (unassignedPassengers.find(p => p.phoneNumber === passenger.phoneNumber)) {
+                        car.passengers.push(passenger);
+                        assignedCount++;
+                        
+                        unassignedPassengers = unassignedPassengers.filter(p => 
+                            p.phoneNumber !== passenger.phoneNumber
+                        );
+                    }
+                }
+            }
+        
             cars.push(car);
+            if (unassignedPassengers.length === 0){
+                break;
+            }
         }
 
         return cars;
@@ -54,7 +120,9 @@ const AdminHome = () => {
                     phoneNumber: p.phoneNumber,
                     fname: p.fname,
                     lname: p.lname,
-                    address: p.address
+                    address: p.address, 
+                    felly: p.felly,
+                    time: p.time,
                 }))
             });
 
@@ -64,7 +132,7 @@ const AdminHome = () => {
                     driver: {
                         phoneNumber: car.driver.phoneNumber,
                         fname: car.driver.fname,
-                        lname: car.driver.lname,
+                        lname: car.driver.lname
                     }
                 });
             }

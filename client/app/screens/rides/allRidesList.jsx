@@ -13,6 +13,28 @@ const AllRidesList = () => {
     const [waitlist, setWaitlist] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const formatTextDisplay = (first, last, felly, time) => {
+        return first + " " + last + " - " + formatTime(time) + " - " + formatFellyDisplay(felly);
+    }
+
+    const formatFellyDisplay = (felly) => {
+        if (felly === "Yes"){
+            return "Felly";
+        } else if (felly === "No, go back early") {
+            return "No Felly";
+        } 
+        return felly;
+    }
+
+    const formatTime = (time) => {
+        if (time === "regular") {
+            return "Regular";
+        } else if (time === "early") {
+            return "Early";
+        } 
+        return time;
+    }
+
     const handleGoBack = () => {
         if (role === "Driver") {
             navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
@@ -41,7 +63,9 @@ const AllRidesList = () => {
                         driver: {
                             phoneNumber: docSnap.id,
                             fname: data.fname,
-                            lname: data.lname
+                            lname: data.lname, 
+                            felly: data.felly,
+                            time: data.time,
                         },
                         passengers: Array.isArray(data.passengers) ? data.passengers : []
                     };
@@ -87,7 +111,7 @@ const AllRidesList = () => {
             </View>
             {carGroups.map((group, index) => (
                 <View key={index} style={styles.card}>
-                    <Text style={styles.cardTitle}>🚗 Car {index + 1}</Text>
+                    <Text style={styles.cardTitle}>🚗 Car {index + 1} - {formatTime(group.driver.time)} - {formatFellyDisplay(group.driver.felly)} </Text>
                     <Text
                         style={[
                         styles.cardText,
@@ -114,7 +138,7 @@ const AllRidesList = () => {
                                 isCurrentUser && { fontWeight: "bold", color: "#007AFF" }, 
                             ]}
                             >
-                            {p.fname} {p.lname}
+                            {formatTextDisplay(p.fname, p.lname, p.felly, p.time)}
                             {isCurrentUser && " (You)"}
                             </Text>
                         );
@@ -128,7 +152,7 @@ const AllRidesList = () => {
                 <Text style={styles.cardTitle}>Waitlist</Text>
                 {waitlist.map((passenger, index) => (
                     <Text key={index} style={[styles.cardText, passenger.id === phoneNumber && {fontWeight: "bold", color: "#007AFF"}]}>
-                        {passenger.fname} {passenger.lname}
+                        {formatTextDisplay(passenger.fname, passenger.lname, passenger.felly, passenger.time)}
                         {passenger.id === phoneNumber && " (You)"}
                     </Text>
                 ))}
