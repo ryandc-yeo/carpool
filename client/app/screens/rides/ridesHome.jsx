@@ -132,6 +132,7 @@ const RidesHome = () => {
       <Pressable style={styles.button} onPress={handleViewRide}>
         <Text style={styles.buttonText}>View Sunday Rides</Text>
       </Pressable>
+      <Text style={styles.text}>You may only view the full rides list if you have signed up for that week.</Text>
     </View>
   );
 };
@@ -166,6 +167,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     marginBottom: 10,
+    marginTop: 10,
     color: "#555",
   },
   redText: {
