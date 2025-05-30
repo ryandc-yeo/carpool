@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useAuth } from "../../src/util/AuthContext";
 
 const RidesHome = () => {
@@ -11,6 +11,7 @@ const RidesHome = () => {
 
   const [fridayDate, setFridayDate] = useState("");
   const [sundayDate, setSundayDate] = useState("");
+  const [ridesGenerated, setRidesGenerated] = useState(false);
 
   const handleSignUp = () => {
     navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
@@ -21,7 +22,7 @@ const RidesHome = () => {
     if (driverDoc.exists()) {
       navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
     }
-    
+
     const passDoc = await getDoc(doc(db, "Sunday Passengers", phoneNumber));
     if (passDoc.exists()) {
       navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
@@ -54,16 +55,31 @@ const RidesHome = () => {
       setFridayDate(formatDate(fridayDateObj));
       setSundayDate(formatDate(sundayDateObj));
     };
+
     calculateDates();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const configRef = doc(db, "meta", "config");
+
+      const unsubscribe = onSnapshot(configRef, (configSnap) => {
+        const ridesGenerated =
+          configSnap.exists() && configSnap.data().ridesGenerated;
+        setRidesGenerated(ridesGenerated);
+      });
+
+      return () => unsubscribe();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Rides Home</Text>
-      
+
       <Text style={styles.text}>
-        Hi {userData.fname} {userData.lname}! You can sign up and view available rides
-        here.
+        Hi {userData.fname} {userData.lname}! You can sign up and view available
+        rides here.
       </Text>
       <View style={styles.question}>
         <Text style={styles.text}>
@@ -81,13 +97,25 @@ const RidesHome = () => {
         afterward.
       </Text>
 
-      <Pressable style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up for a Ride</Text>
+      <Pressable
+        style={[styles.button, ridesGenerated && { backgroundColor: "#888" }]}
+        onPress={handleSignUp}
+        disabled={ridesGenerated}
+      >
+        <Text style={styles.buttonText}>
+          {ridesGenerated
+            ? "Sign-up Closed (Rides Assigned)"
+            : "Sign Up for a Ride"}
+        </Text>
       </Pressable>
 
       <Pressable style={styles.button} onPress={handleViewRide}>
         <Text style={styles.buttonText}>View Sunday Rides</Text>
       </Pressable>
+      <Text style={styles.text}>
+        You may only view the full rides list if you have signed up for that
+        week.
+      </Text>
     </View>
   );
 };
@@ -122,6 +150,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     marginBottom: 10,
+    marginTop: 10,
     color: "#555",
   },
   redText: {
