@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     const restorePhoneNumber = async () => {
       try {
         const storedPhone = await SecureStore.getItemAsync('phoneNumber');
+        console.log("Restored user from SecureStore:", storedPhone);
         if (storedPhone) {
           setPhoneNumber(storedPhone);
           const userDoc = await getDoc(doc(db, "users", storedPhone));
@@ -33,12 +34,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (phone) => {
     const userDoc = await getDoc(doc(db, "users", phone));
     if (!userDoc.exists()) {
-      alert("cannot login");
-      return;
+      return false;
     }
     setPhoneNumber(phone);
     setUserData(userDoc.data());
     await SecureStore.setItemAsync('phoneNumber', phone);
+    return true;
   };
 
   const logout = async () => {
