@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
 import { doc , setDoc, getDoc } from "firebase/firestore";
+import { useAuth } from "../../src/util/AuthContext";
 
 const Profile = () => {
   const gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior"];
@@ -19,7 +20,8 @@ const Profile = () => {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { phoneNumber, isEdit} = route.params;
+  const { phoneNumber, isEdit } = route.params;
+  const { login } = useAuth();
 
   const createUser = async () => {
     const finalAddress = newAddress === "Apartment" ? customAddress : newAddress;
@@ -32,13 +34,13 @@ const Profile = () => {
     }, { merge: true });
 
     const rideCollections = [
-    "Friday Passengers",
-    "Friday Drivers",
-    "Sunday Passengers",
-    "Sunday Drivers"
+      "Friday Passengers",
+      "Friday Drivers",
+      "Sunday Passengers",
+      "Sunday Drivers"
     ];
 
-    // 3. Loop and update user data in each ride record
+    // Loop and update user data in each ride record
     for (const collection of rideCollections) {
       const ref = doc(db, collection, phoneNumber);
       const snap = await getDoc(ref);
@@ -52,8 +54,6 @@ const Profile = () => {
         }, { merge: true });
       }
     }
-
-
   };
 
   useEffect(() => {
@@ -212,7 +212,8 @@ const Profile = () => {
         }
         await createUser();
 
-        navigation.navigate("Rides", { phoneNumber: phoneNumber });
+        await login(phoneNumber);
+        navigation.navigate("Rides");
       }} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>
           {isEdit ? "Save Profile" : "Create Profile"}

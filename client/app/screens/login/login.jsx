@@ -1,22 +1,46 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../src/util/AuthContext";
 
 const Login = () => {
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [pNumber, setPNumber] = useState("");
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+    const { phoneNumber, login } = useAuth();
+
+    useEffect(() => {
+        if (phoneNumber) {
+            (async () => {
+                const loggedIn = await login(phoneNumber);
+                if (loggedIn) {
+                    navigation.navigate("Rides");
+                    setLoading(false);
+                }
+            })();
+        }
+        setLoading(false);
+    }, []);
 
     const handleLogin = () => {
         const regex = /^\d{3}\d{3}\d{4}$/;
-        if (regex.test(phoneNumber)) {
-            alert("Login pressed with phone number: " + phoneNumber);
-            navigation.navigate("Phone Verification", { phoneNumber: phoneNumber });
+        if (regex.test(pNumber)) {
+            alert("Login pressed with phone number: " + pNumber);
+            navigation.navigate("Phone Verification", { phoneNumber: pNumber });
         }
         else {
             alert("Please enter a valid phone number in the format XXX-XXX-XXXX");
-            setPhoneNumber("");
+            setPNumber("");
             return;
         }
+    }
+
+    if (loading) {
+        return (
+            <View style={styles.center}>
+                <Text>Loading...</Text>
+            </View>
+        );
     }
 
     return (
@@ -28,8 +52,8 @@ const Login = () => {
             <TextInput
                 placeholder="000-000-0000"
                 style={styles.input}
-                onChangeText={text => setPhoneNumber(text)}
-                value={phoneNumber}
+                onChangeText={text => setPNumber(text)}
+                value={pNumber}
                 keyboardType="numeric"
             />
             <Pressable onPress={handleLogin} style={styles.loginButton}>
@@ -63,29 +87,36 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingLeft: 10,
         marginBottom: 20,
-    }, loginButton: {
+    },
+    loginButton: {
         backgroundColor: 'black',
         padding: 10,
         borderRadius: 5,
         width: '100%',
         alignItems: 'center',
-    }, loginButtonText: {
+    },
+    loginButtonText: {
         color: 'white',
         fontSize: 18,
     },
     logoutButton: {
-    backgroundColor: "#f01e2c",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
+        backgroundColor: "#f01e2c",
+        padding: 10,
+        borderRadius: 5,
+        width: "100%",
+        alignItems: "center",
+        marginTop: 20,
     },
     logoutButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
+        color: "white",
+        fontSize: 18,
+        fontWeight: "600",
     },
+    center: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+  },
 });
 
 export default Login;

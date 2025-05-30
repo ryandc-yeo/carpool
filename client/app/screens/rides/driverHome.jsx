@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useFocusEffect} from "react";
-import { useCallback } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
