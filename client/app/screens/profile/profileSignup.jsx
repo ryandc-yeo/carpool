@@ -82,6 +82,31 @@ const Profile = () => {
     loadUserData();
   } , [phoneNumber]);
 
+  useEffect(() => {
+    if (!isEdit) {
+      navigation.setOptions({
+        gestureEnabled: false,
+        headerLeft: () => null,
+      });
+      const parentNav = navigation.getParent(); // this is the drawer nav
+
+      if (parentNav) {
+        parentNav.setOptions({
+          swipeEnabled: false, // disables swipe-to-open
+        });
+      }
+
+      return () => {
+        if (parentNav) {
+          parentNav.setOptions({
+            swipeEnabled: true,
+          });
+        }
+      };
+      
+    }
+  }, [navigation, isEdit]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
