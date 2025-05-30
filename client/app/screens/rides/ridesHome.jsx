@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect, useCallback } from "react";
+import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 const RidesHome = () => {
   const navigation = useNavigation();
@@ -12,6 +12,7 @@ const RidesHome = () => {
   const [fridayDate, setFridayDate] = useState("");
   const [sundayDate, setSundayDate] = useState("");
   const [userData, setUserData] = useState("");
+  const [ridesGenerated, setRidesGenerated] = useState(false);
 
   const handleSignUp = () => {
     navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
@@ -65,8 +66,25 @@ const RidesHome = () => {
       setFridayDate(formatDate(fridayDateObj));
       setSundayDate(formatDate(sundayDateObj));
     };
+
     calculateDates();
+
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const configRef = doc(db, "meta", "config");
+
+      const unsubscribe = onSnapshot(configRef, (configSnap) => {
+        const ridesGenerated =
+          configSnap.exists() && configSnap.data().ridesGenerated;
+        setRidesGenerated(ridesGenerated);
+      });
+
+      return () => unsubscribe();
+    }, [])
+  );
+
 
   useEffect(() => {
     (async () => {
@@ -98,8 +116,17 @@ const RidesHome = () => {
         afterward.
       </Text>
 
-      <Pressable style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up for a Ride</Text>
+      <Pressable
+        style={[
+          styles.button,
+          ridesGenerated && { backgroundColor: "#888" } 
+        ]}
+        onPress={handleSignUp}
+        disabled={ridesGenerated}
+      >
+        <Text style={styles.buttonText}>
+          {ridesGenerated ? "Sign-up Closed (Rides Assigned)" : "Sign Up for a Ride"}
+        </Text>
       </Pressable>
 
       <Pressable style={styles.button} onPress={handleViewRide}>

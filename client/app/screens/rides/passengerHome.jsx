@@ -185,9 +185,19 @@ const PassengerHome = () => {
 
         </>
       )}
-      <Pressable style={styles.button} onPress={handleEditSignUp}>
-        <Text style={styles.buttonText}>Edit Sign Up</Text>
+      <Pressable
+        style={[
+          styles.button,
+          ridesGenerated && { backgroundColor: "#888" }
+        ]}
+        onPress={handleEditSignUp}
+        disabled={ridesGenerated}
+      >
+        <Text style={styles.buttonText}>
+          {ridesGenerated ? "Sign-up Closed (Rides Assigned)" : "Edit Sign Up"}
+        </Text>
       </Pressable>
+
     </ScrollView>
   );
 };
