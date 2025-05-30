@@ -1,30 +1,13 @@
-import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
-import {useAuth} from "../admin/AuthContext";
-import { useRoute, useNavigation} from "@react-navigation/native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { useEffect } from "react";
+import { useAuth } from "../../src/util/AuthContext";
+import { useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
-import { doc , setDoc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc , onSnapshot } from "firebase/firestore";
 
 const ProfileHome = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { phoneNumber, setPhoneNumber } = useAuth();
-
-  const [userData, setUserData] = useState("");
-
-  const getUser = async () => {
-    try {
-      if (!phoneNumber) {
-        alert("Missing phone number. Cannot load user.");
-        return;
-      }
-      const userDoc = await getDoc(doc(db, "users", phoneNumber));
-      setUserData(userDoc.data());
-    } catch (err) {
-      console.error("Error checking Firestore: ", err);
-      alert("Something wrong. Please try again.");
-    }
-  };
+  const { phoneNumber, userData, setUserData, logout } = useAuth();
 
   useEffect(() => {
     if (!phoneNumber) return;
@@ -38,9 +21,6 @@ const ProfileHome = () => {
 
     return () => unsubscribe(); 
   }, [phoneNumber]);
-
-  
-
 
   return (
     <View style={styles.container}>
@@ -57,8 +37,7 @@ const ProfileHome = () => {
       <Pressable
         style={[styles.loginButton, { backgroundColor: '#d9534f' }]}
         onPress={() => {
-          setPhoneNumber(null);
-          setUserData(null);
+          logout();
           navigation.reset({
             index: 0,
             routes: [{ name: "Login" }],

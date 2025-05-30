@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
@@ -63,28 +63,30 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingLeft: 10,
         marginBottom: 20,
-    }, loginButton: {
+    },
+    loginButton: {
         backgroundColor: 'black',
         padding: 10,
         borderRadius: 5,
         width: '100%',
         alignItems: 'center',
-    }, loginButtonText: {
+    },
+    loginButtonText: {
         color: 'white',
         fontSize: 18,
     },
     logoutButton: {
-    backgroundColor: "#f01e2c",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
+        backgroundColor: "#f01e2c",
+        padding: 10,
+        borderRadius: 5,
+        width: "100%",
+        alignItems: "center",
+        marginTop: 20,
     },
     logoutButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
+        color: "white",
+        fontSize: 18,
+        fontWeight: "600",
     },
 });
 
