@@ -43,6 +43,36 @@ const AllRidesList = () => {
         }
     };
 
+    // grouping passengers for ubers
+    function groupPassengers(passengers) {
+        const groups = [];
+        let i = 0;
+
+        while (i < passengers.length) {
+            const remaining = passengers.length - i;
+
+            if (remaining === 5) {
+                // group of five better than four 
+                groups.push(passengers.slice(i, i + 5));
+                i += 5;
+            } else if (remaining >= 6) {
+                // prefer groups of six
+                groups.push(passengers.slice(i, i + 6));
+                i += 6;
+            } else if (remaining >= 4) {
+                // otherwise do groups of four
+                groups.push(passengers.slice(i, i + 4));
+                i += 4;
+            } else {
+                // less than four, group as is
+                groups.push(passengers.slice(i));
+                break;
+            }
+        }
+
+        return groups;
+    }
+
     useFocusEffect(
         useCallback(() => {
             const configRef = doc(db, "meta", "config");
@@ -150,15 +180,24 @@ const AllRidesList = () => {
                     )}
                 </View>
             ))}
-            <View style={styles.card}>
-                <Text style={styles.cardTitle}>Waitlist</Text>
-                {waitlist.map((passenger, index) => (
-                    <Text key={index} style={[styles.cardText, passenger.id === phoneNumber && {fontWeight: "bold", color: "#007AFF"}]}>
-                        {formatTextDisplay(passenger.fname, passenger.lname, passenger.felly, passenger.time)}
-                        {passenger.id === phoneNumber && " (You)"}
-                    </Text>
-                ))}
+
+            {groupPassengers(waitlist).map((group, groupIndex) => (
+                <View key={groupIndex} style={styles.card}>
+                    <Text style={styles.cardTitle}>Uber Group {groupIndex + 1}</Text>
+                    {group.map((passenger, index) => (
+                        <Text 
+                            key={index} 
+                            style={[
+                                styles.cardText, 
+                                passenger.id === phoneNumber && { fontWeight: "bold", color: "#007AFF" }
+                            ]}
+                        >
+                            {formatTextDisplay(passenger.fname, passenger.lname, passenger.felly, passenger.time)}
+                            {passenger.id === phoneNumber && " (You)"}
+                        </Text>
+                    ))}
             </View>
+            ))}
         </ScrollView>
     );
 };
