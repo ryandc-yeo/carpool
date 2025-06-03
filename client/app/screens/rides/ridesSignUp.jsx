@@ -14,9 +14,9 @@ const RidesSignUp = () => {
   const commentsRef = useRef(null);
 
   const roleOptions = ["Passenger", "Driver"];
-  const fridayOptions = ["Early (5pm)", "Regular (6:30pm)"];
-  const sundayOptions = ["Early (8am)", "Regular (10:45am)"];
-  const fellyOptions = ["Yes", "No, go back early"];
+  const fridayOptions = ["Early (5pm)", "Regular (6:30pm)", "No time preference"];
+  const sundayOptions = ["Early (8am)", "Regular (10:45am)", "No time preference"];
+  const fellyOptions = ["Yes", "No, go back early", "No preference"];
   const addressOptions = [
     { label: "Hill (De Neve Turn Around)", value: "Hill" },
   { label: "Apartment (Enter Address)", value: "Apartment" }
@@ -68,8 +68,11 @@ const RidesSignUp = () => {
 
     const finalAddress = address === "Apartment" ? customAddress : address;
 
-    const timeValue = (slot) =>
-      slot === "Early (5pm)" || slot === "Early (8am)" ? "early" : "regular";
+    const timeValue = (slot) => {
+      if (slot === "No preference" || slot === "") return "no_preference";
+      return slot === "Early (5pm)" || slot === "Early (8am)" ? "early" : "regular";
+    };
+      
 
     if (friday !== "" && role === "Driver") {
       await setDoc(
@@ -277,7 +280,7 @@ const RidesSignUp = () => {
 
         <View style={styles.question}>
           <Text style={styles.subtitle}>
-            Stay for lunch after Sunday service or go back immediately?
+            Would you like to join us for lunch?
             <Text style={styles.required}> *</Text>
           </Text>
 
