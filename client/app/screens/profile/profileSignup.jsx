@@ -1,5 +1,6 @@
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, { useState, useEffect, useRef } from "react";
 import { useRoute, useNavigation} from "@react-navigation/native";
 import db from "../../src/firebase-config";
 import { doc , setDoc, getDoc } from "firebase/firestore";
@@ -108,127 +109,140 @@ const Profile = () => {
   }, [navigation, isEdit]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {isEdit ? "Edit Your Profile" : "Welcome! Create your profile"}
-      </Text>
-
-      <Text style={styles.subtitle}>
-        First Name
-        <Text style={styles.required}> *</Text>
-      </Text>
-      <TextInput 
-        placeholder="First Name"
-        style={styles.input}
-        value={newFname}
-        onChangeText={(text) => {
-          setFname(text);
-        }}
-      />
-
-      <Text style={styles.subtitle}>
-        Last Name
-        <Text style={styles.required}> *</Text>
-      </Text>
-      <TextInput 
-        placeholder="Last Name"
-        style={styles.input}
-        value={newLname}
-        onChangeText={(text) => {
-          setLname(text);
-        }}
-      />
-
-      <Text style={styles.subtitle}>
-        Phone Number
-        <Text style={styles.required}> *</Text>
-      </Text>
-      <Text>{phoneNumber || ''}</Text>
-
-
-      <Text style={styles.subtitle}>
-        Grade
-        <Text style={styles.required}> *</Text>
-      </Text>
-      {gradeOptions.map((g) => (
-        <View key={g} style={styles.radioRow}>
-          <Pressable
-            style={[
-              styles.radioButtonOuter,
-              newGrade === g && styles.radioButtonOuterSelected,
-            ]}
-            onPress={() => setGrade(g)}
-          >
-            {newGrade === g && <View style={styles.radioButtonInner} />}
-          </Pressable>
-          <Text style={styles.radioText}>{g}</Text>
-        </View>
-      ))}
-
-      <Text style={styles.subtitle}>
-        Address
-        <Text style={styles.required}> *</Text>
-      </Text>
-      {addressOptions.map((a) => (
-        <View key={a.value} style={styles.radioRow}>
-          <Pressable
-            style={[
-              styles.radioButtonOuter,
-              newAddress === a.value && styles.radioButtonOuterSelected,
-            ]}
-            onPress={() => setAddress(a.value)}
-          >
-            {newAddress === a.value && <View style={styles.radioButtonInner} />}
-          </Pressable>
-          <Text style={styles.radioText}>{a.label}</Text>
-        </View>
-      ))}
-      {newAddress === "Apartment" && (
-        <TextInput
-          style={styles.input}
-          placeholder="Enter apartment address"
-          placeholderTextColor="#888"
-          value={customAddress}
-          onChangeText={setCustomAddress}
-        />
-      )}
-
-      <Pressable onPress={async () => {
-        if (!newFname.trim()) {
-          alert("First name is required.");
-          return;
-        }
-        if (!newLname.trim()) {
-          alert("Last name is required.");
-          return;
-        }
-        if (!newGrade) {
-          alert("Please select your grade.");
-          return;
-        }
-        if (!newAddress || (newAddress === "Apartment" && !customAddress.trim())) {
-          alert("Please provide your address.");
-          return;
-        }
-        await createUser();
-
-        await login(phoneNumber);
-        navigation.navigate("Rides");
-      }} style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>
-          {isEdit ? "Save Profile" : "Create Profile"}
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.scrollContainer}
+      enableOnAndroid={true}
+      enableAutomaticScroll={true}
+      extraScrollHeight={80}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          {isEdit ? "Edit Your Profile" : "Welcome! Create your profile"}
         </Text>
-      </Pressable>
-    </View>
+
+        <Text style={styles.subtitle}>
+          First Name
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <TextInput 
+          placeholder="First Name"
+          style={styles.input}
+          value={newFname}
+          onChangeText={(text) => {
+            setFname(text);
+          }}
+        />
+
+        <Text style={styles.subtitle}>
+          Last Name
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <TextInput 
+          placeholder="Last Name"
+          style={styles.input}
+          value={newLname}
+          onChangeText={(text) => {
+            setLname(text);
+          }}
+        />
+
+        <Text style={styles.subtitle}>
+          Phone Number
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <Text>{phoneNumber || ''}</Text>
+
+
+        <Text style={styles.subtitle}>
+          Grade
+          <Text style={styles.required}> *</Text>
+        </Text>
+        {gradeOptions.map((g) => (
+          <View key={g} style={styles.radioRow}>
+            <Pressable
+              style={[
+                styles.radioButtonOuter,
+                newGrade === g && styles.radioButtonOuterSelected,
+              ]}
+              onPress={() => setGrade(g)}
+            >
+              {newGrade === g && <View style={styles.radioButtonInner} />}
+            </Pressable>
+            <Text style={styles.radioText}>{g}</Text>
+          </View>
+        ))}
+
+        <Text style={styles.subtitle}>
+          Address
+          <Text style={styles.required}> *</Text>
+        </Text>
+        {addressOptions.map((a) => (
+          <View key={a.value} style={styles.radioRow}>
+            <Pressable
+              style={[
+                styles.radioButtonOuter,
+                newAddress === a.value && styles.radioButtonOuterSelected,
+              ]}
+              onPress={() => setAddress(a.value)}
+            >
+              {newAddress === a.value && <View style={styles.radioButtonInner} />}
+            </Pressable>
+            <Text style={styles.radioText}>{a.label}</Text>
+          </View>
+        ))}
+        {newAddress === "Apartment" && (
+          <TextInput
+            style={styles.input}
+            placeholder="Enter apartment address"
+            placeholderTextColor="#888"
+            value={customAddress}
+            onChangeText={setCustomAddress}
+          />
+        )}
+
+        <Pressable onPress={async () => {
+          if (!newFname.trim()) {
+            alert("First name is required.");
+            return;
+          }
+          if (!newLname.trim()) {
+            alert("Last name is required.");
+            return;
+          }
+          if (!newGrade) {
+            alert("Please select your grade.");
+            return;
+          }
+          if (!newAddress || (newAddress === "Apartment" && !customAddress.trim())) {
+            alert("Please provide your address.");
+            return;
+          }
+          await createUser();
+
+          await login(phoneNumber);
+          navigation.navigate("Rides");
+        }} style={styles.loginButton}>
+          <Text style={styles.loginButtonText}>
+            {isEdit ? "Save Profile" : "Create Profile"}
+          </Text>
+        </Pressable>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-start",
+    padding: 20,
+  },
   container: {
     flex: 1,
-    alignItems: "left",
-    justifyContent: "center",
-    padding: 20,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    width: "100%",
   },
   title: {
     fontSize: 24,
