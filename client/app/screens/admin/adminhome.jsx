@@ -38,6 +38,9 @@ const AdminHome = () => {
             return 0;
         })
 
+        
+        
+
         for (let i = 0; i < sortedDrivers.length; i++) {
             const driver = sortedDrivers[i];
             const car = {
@@ -45,46 +48,62 @@ const AdminHome = () => {
                 passengers: []
             };
 
+            const capacity = driver.capacity || 4;
+            let assignedCount = 0;
+
+            // Seperate passegner by preference
+            const fullyPreferred = unassignedPassengers.filter(
+                (p) => p.felly !== "no_preference" && p.time !== "no_preference"
+            );
+            const timeOnlyPreferred = unassignedPassengers.filter(
+                (p) => p.felly === "no_preference" && p.time !== "no_preference"
+            );
+            const fellyOnlyPreferred = unassignedPassengers.filter(
+                (p) => p.felly !== "no_preference" && p.time === "no_preference"
+            );
+            const fullyFlexible = unassignedPassengers.filter(
+                (p) => p.felly === "no_preference" && p.time === "no_preference"
+            );
+
             const priorityGroups = [];
 
             if (driver.time === "early") {
                 // early drivers need to have early passengers
-                const earlyPassengers = unassignedPassengers.filter(p => p.time === "early");
-                const regularPassengers = unassignedPassengers.filter(p => p.time !== "early");
+                const earlyPreferred = fullyPreferred.filter(p => p.time === "early");
+                const regPreferred = fullyPreferred.filter(p => p.time !== "early");
                 priorityGroups.push(
                     // 1. early + same felly + same location
-                    earlyPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    earlyPreferred.filter(p => p.felly === driver.felly && p.location === driver.location),
                     // 2. early + same felly + diff location
-                    earlyPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    earlyPreferred.filter(p => p.felly === driver.felly && p.location !== driver.location),
                     // 3. early + diff felly + same location
-                    earlyPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    earlyPreferred.filter(p => p.felly !== driver.felly && p.location === driver.location),
                     // 4. early + diff felly + diff location
-                    earlyPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location),
+                    earlyPreferred.filter(p => p.felly !== driver.felly && p.location !== driver.location),
                     // 5. reg + same felly + same location
-                    regularPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    regPreferred.filter(p => p.felly === driver.felly && p.location === driver.location),
                     // 6. reg + same felly + diff location
-                    regularPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    regPreferred.filter(p => p.felly === driver.felly && p.location !== driver.location),
                     // 7. reg + diff felly + same location
-                    regularPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    regPreferred.filter(p => p.felly !== driver.felly && p.location === driver.location),
                     // 8. reg + diff felly + diff location
-                    regularPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location)
+                    regPreferred.filter(p => p.felly !== driver.felly && p.location !== driver.location)
                 ); 
             } else {
                 // regular drivers prioritize by felly and location only
                 priorityGroups.push(
                     // 1. same felly + same location
-                    unassignedPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
+                    fullyPreferred.filter(p => p.felly === driver.felly && p.location === driver.location),
                     // 2. same felly + diff location
-                    unassignedPassengers.filter(p => p.felly === driver.felly && p.location !== driver.location),
+                    fullyPreferred.filter(p => p.felly === driver.felly && p.location !== driver.location),
                     // 3. diff felly + same location
-                    unassignedPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
+                    fullyPreferred.filter(p => p.felly !== driver.felly && p.location === driver.location),
                     // 4. diff felly + diff location
-                    unassignedPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location)
+                    fullyPreferred.filter(p => p.felly !== driver.felly && p.location !== driver.location)
                 );
             }
 
-            let capacity = driver.capacity || 4;
-            let assignedCount = 0;
+            // Fill car with fully preferred passengers
             for (const group of priorityGroups) {
                 if (assignedCount >= capacity) break;
                 for (const passenger of group) {
@@ -101,8 +120,33 @@ const AdminHome = () => {
                     }
                 }
             }
+
+            // Add time-only preferred
+            for (const passenger of timeOnlyPreferred) {
+                if (assignedCount >= capacity) break;
+                car.passengers.push(passenger);
+                assignedCount++;
+                unassignedPassengers = unassignedPassengers.filter(p => p.phoneNumber !== passenger.phoneNumber);
+            }
+
+            // Add felly-only preferred
+            for (const passenger of fellyOnlyPreferred) {
+                if (assignedCount >= capacity) break;
+                car.passengers.push(passenger);
+                assignedCount++;
+                unassignedPassengers = unassignedPassengers.filter(p => p.phoneNumber !== passenger.phoneNumber );
+            }
+
+            // Add fully flexible passengers
+            for (const passenger of fullyFlexible) {
+                if (assignedCount >= capacity) break;
+                car.passengers.push(passenger);
+                assignedCount++;
+                unassignedPassengers = unassignedPassengers.filter(p => p.phoneNumber !== passenger.phoneNumber);
+            }
         
             cars.push(car);
+
             if (unassignedPassengers.length === 0){
                 break;
             }
