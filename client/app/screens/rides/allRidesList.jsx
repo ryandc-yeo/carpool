@@ -7,7 +7,7 @@ import db from "../../src/firebase-config";
 const AllRidesList = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { phoneNumber, role } = route.params || {};
+    const { phoneNumber, role, day } = route.params || {};
 
     const [carGroups, setCarGroups] = useState([]);
     const [waitlist, setWaitlist] = useState([]);
@@ -37,9 +37,9 @@ const AllRidesList = () => {
 
     const handleGoBack = () => {
         if (role === "Driver") {
-            navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
+            navigation.navigate("Driver Home", { phoneNumber: phoneNumber, day: day});
         } else {
-            navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
+            navigation.navigate("Passenger Home", { phoneNumber: phoneNumber, day: day});
         }
     };
 
@@ -86,7 +86,7 @@ const AllRidesList = () => {
                     return;
                 }
 
-                const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
+                const driversSnapshot = await getDocs(collection(db, `${day} Drivers`));
                 const groups = driversSnapshot.docs.map(docSnap => {
                     const data = docSnap.data();
                     return {
@@ -101,7 +101,7 @@ const AllRidesList = () => {
                     };
                 });
 
-                const passengersSnapshot = await getDocs(collection(db, "Sunday Passengers"));
+                const passengersSnapshot = await getDocs(collection(db, `${day} Passengers`));
                 const waitlist = passengersSnapshot.docs.map(docSnap =>{
                     const data = docSnap.data(); 
                     if (data.driver == null) {
@@ -119,7 +119,7 @@ const AllRidesList = () => {
             });
 
             return () => unsubscribe(); // clean up on unmount
-        }, [role])
+        }, [day, role])
     );
     
 
@@ -139,7 +139,7 @@ const AllRidesList = () => {
                     <Text style={styles.backButtonText}>← Back</Text>
                 </Pressable>
             </View>
-            <Text style={styles.title}>Sunday Rides</Text>
+            <Text style={styles.title}>{day} Rides</Text>
 
             {carGroups.map((group, index) => (
                 <View key={index} style={styles.card}>

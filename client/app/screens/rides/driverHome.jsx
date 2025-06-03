@@ -7,23 +7,23 @@ import db from "../../src/firebase-config";
 const DriverHome = () => {
   const navigation = useNavigation();
   const route = useRoute(); 
-  const { phoneNumber } = route.params || {};
+  const { phoneNumber, day} = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
   
 
   const handleGoBack = () => {
-    navigation.navigate("Rides", { phoneNumber: phoneNumber });
+    navigation.navigate("Rides", { phoneNumber: phoneNumber, });
   };
 
   const handleAllRides = () => {
-    navigation.navigate("Ride Details", { phoneNumber: phoneNumber, role: "Driver" });
+    navigation.navigate("Ride Details", { phoneNumber: phoneNumber, role: "Driver", day: day});
   }
 
   useEffect(() => {
     const loadDriverInfo = async () => {
-      const driverRef = doc(db, "Sunday Drivers", phoneNumber);
+      const driverRef = doc(db, `${day} Drivers`, phoneNumber);
       const driverSnap = await getDoc(driverRef);
 
       if (driverSnap.exists()) {
@@ -54,12 +54,12 @@ const DriverHome = () => {
       acknowledged: false,
     }));
 
-    await updateDoc(doc(db, "Sunday Drivers", phoneNumber), {
+    await updateDoc(doc(db, `${day} Drivers`, phoneNumber), {
       passengers: updatedPassengers,
     });
 
     for (const p of updatedPassengers) {
-      await updateDoc(doc(db, "Sunday Passengers", p.phoneNumber), {
+      await updateDoc(doc(db, `${day} Drivers`, p.phoneNumber), {
         pickupTime: p.pickupTime,
         acknowledged: false,
       });
@@ -81,7 +81,7 @@ const DriverHome = () => {
         </Pressable>
       </View>
       
-      <Text style={styles.header}>Your Passengers</Text>
+      <Text style={styles.header}>Your Passengers for {day}</Text>
       {hasSubmitted && (
         <View style={styles.submissionBanner}>
           <Text style={styles.submissionText}>Pickup times submitted successfully.</Text>

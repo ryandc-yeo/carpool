@@ -6,7 +6,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 const RidesNotReleased = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { role } = route.params || {};
+    const { role} = route.params || {};
 
     const handleGoBack = () => {
       if (role === "Driver") {
