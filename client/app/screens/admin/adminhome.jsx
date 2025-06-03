@@ -27,6 +27,7 @@ const AdminHome = () => {
     // 1. same pickup time: "early"
     // 2. same felly: "felly" or "no felly"
     // 3. location: "hill", "south of wilshire", "north of wilshire"
+    // 4. then do regular car ppl
     const assignCars = (drivers, passengers) => {
         const cars = [];
         let unassignedPassengers = [...passengers];
@@ -50,7 +51,8 @@ const AdminHome = () => {
             if (driver.time === "early") {
                 // early drivers need to have early passengers
                 const earlyPassengers = unassignedPassengers.filter(p => p.time === "early");
-                const regularPassengers = unassignedPassengers.filter(p => p.time !== "early");
+                const noPrefPassengers = unassignedPassengers.filter(p => p.time === "no_preference");
+                const regularPassengers = unassignedPassengers.filter(p => p.time === "regular");
                 priorityGroups.push(
                     // 1. early + same felly + same location
                     earlyPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
@@ -60,6 +62,8 @@ const AdminHome = () => {
                     earlyPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
                     // 4. early + diff felly + diff location
                     earlyPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location),
+                    // 4.5 no pref 
+                    noPrefPassengers,
                     // 5. reg + same felly + same location
                     regularPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
                     // 6. reg + same felly + diff location

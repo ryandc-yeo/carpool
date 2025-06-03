@@ -31,7 +31,9 @@ const AllRidesList = () => {
             return "Regular";
         } else if (time === "early") {
             return "Early";
-        } 
+        } else if (time === "no_preference") {
+            return "No Preference"
+        }
         return time;
     }
 

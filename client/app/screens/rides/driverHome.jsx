@@ -22,6 +22,8 @@ const DriverHome = () => {
   }
 
   useEffect(() => {
+    if (!day || !phoneNumber) return;
+
     const loadDriverInfo = async () => {
       const driverRef = doc(db, `${day} Drivers`, phoneNumber);
       const driverSnap = await getDoc(driverRef);
@@ -41,7 +43,7 @@ const DriverHome = () => {
     };
 
     loadDriverInfo();
-  }, []);
+  }, [day, phoneNumber]);
 
   const handleTimeChange = (phone, time) => {
     setPickupTimes((prev) => ({ ...prev, [phone]: time }));
