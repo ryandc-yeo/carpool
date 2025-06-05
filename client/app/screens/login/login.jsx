@@ -2,6 +2,9 @@ import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../src/util/AuthContext";
+import db from "../../src/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+// import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 
 const { CLIENT_IP } = Constants.expoConfig.extra;
@@ -14,16 +17,24 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [resendCountdown, setResendCountdown] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   const navigation = useNavigation();
-  const { login, isAuthenticated, isFullyRegistered } = useAuth();
+  const { login, phoneNumber: authPhoneNumber } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated && isFullyRegistered) {
-      navigation.navigate("Rides");
+    console.log("AUTH AUTH AUTH", authPhoneNumber);
+    if (authPhoneNumber) {
+      (async () => {
+        const loggedIn = await login(authPhoneNumber);
+        if (loggedIn) {
+          navigation.navigate("Rides");
+          setLoading(false);
+        }
+      })();
     }
-  }, [isAuthenticated, isFullyRegistered]);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     let timer;
@@ -72,9 +83,12 @@ const Login = () => {
     setLoading(true);
     setResendCountdown(60);
 
+    console.log("TRY SENDING", phoneNumber);
+
     try {
       const formattedPhone = formatPhoneNumber(phoneNumber);
 
+      console.log("FORMATTED: ", formattedPhone, API_BASE_URL);
       const response = await fetch(`${API_BASE_URL}/send-verification`, {
         method: "POST",
         headers: {
@@ -86,6 +100,8 @@ const Login = () => {
       });
 
       const data = await response.json();
+
+      console.log("DONE SEND", data);
 
       if (data.success) {
         setOtpSent(true);
@@ -126,7 +142,7 @@ const Login = () => {
     try {
       const formattedPhone = formatPhoneNumber(phoneNumber);
 
-      const response = await fetch(`${API_BASE_URL}/verify-code`, {
+      await fetch(`${API_BASE_URL}/verify-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,17 +153,14 @@ const Login = () => {
         }),
       });
 
-      const data = await response.json();
       const firebaseNumberFormat = formattedPhone.slice(2);
 
-      if (data.success) {
-        console.log("Verification successful:", data);
+      try {
+        const userDoc = await getDoc(doc(db, "users", firebaseNumberFormat));
 
-        await login(firebaseNumberFormat);
-
-        if (data.userExists && data.userData) {
+        if (userDoc.exists()) {
           // Existing user with complete profile
-          alert(`Welcome back ${data.userData.fname} ${data.userData.lname}!`);
+          await login(firebaseNumberFormat);
           navigation.navigate("Rides");
         } else {
           // New user or incomplete profile
@@ -156,8 +169,9 @@ const Login = () => {
             isEdit: false,
           });
         }
-      } else {
-        throw new Error(data.error || "Verification failed");
+      } catch (err) {
+        console.error("Error checking Firestore: ", err);
+        alert("Something wrong. Please try again.");
       }
     } catch (error) {
       console.error("Verification failed:", error);

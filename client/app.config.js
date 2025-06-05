@@ -15,6 +15,7 @@ export default {
       APP_ID: process.env.APP_ID,
       MEASUREMENT_ID: process.env.MEASUREMENT_ID,
       CLIENT_IP: process.env.CLIENT_IP,
+      YOUR_PHONE_NO: process.env.YOUR_PHONE_NO,
     },
   },
 };
