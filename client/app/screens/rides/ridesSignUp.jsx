@@ -1,5 +1,12 @@
-import { View, Text, TextInput, StyleSheet, Pressable, Keyboard } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  Keyboard,
+} from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import React, { useEffect, useState, useRef } from "react";
 import Checkbox from "expo-checkbox";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -14,12 +21,20 @@ const RidesSignUp = () => {
   const commentsRef = useRef(null);
 
   const roleOptions = ["Passenger", "Driver"];
-  const fridayOptions = ["Early (5pm)", "Regular (6:30pm)", "No time preference"];
-  const sundayOptions = ["Early (8am)", "Regular (10:45am)", "No time preference"];
+  const fridayOptions = [
+    "Early (5pm)",
+    "Regular (6:30pm)",
+    "No time preference",
+  ];
+  const sundayOptions = [
+    "Early (8am)",
+    "Regular (10:45am)",
+    "No time preference",
+  ];
   const fellyOptions = ["Yes", "No, go back early", "No preference"];
   const addressOptions = [
     { label: "Hill (De Neve Turn Around)", value: "Hill" },
-  { label: "Apartment (Enter Address)", value: "Apartment" }
+    { label: "Apartment (Enter Address)", value: "Apartment" },
   ];
 
   const [role, setRole] = useState("");
@@ -27,7 +42,7 @@ const RidesSignUp = () => {
   const [sunday, setSunday] = useState("");
   const [felly, setFelly] = useState("");
   const [address, setAddress] = useState("");
-  const [customAddress, setCustomAddress] = useState ("")
+  const [customAddress, setCustomAddress] = useState("");
   const [isNewcomer, setisNewcomer] = useState(false);
   const [acknowledge, setAcknowledge] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -45,7 +60,10 @@ const RidesSignUp = () => {
       const data = await fetchUserData(phoneNumber);
       setUserData(data);
       if (data.address) {
-        if (data.address === "Hill (De Neve Turn Around)" || data.address === "Hill") {
+        if (
+          data.address === "Hill (De Neve Turn Around)" ||
+          data.address === "Hill"
+        ) {
           setAddress("Hill");
         } else {
           setAddress("Apartment");
@@ -70,9 +88,10 @@ const RidesSignUp = () => {
 
     const timeValue = (slot) => {
       if (slot === "No preference" || slot === "") return "no_preference";
-      return slot === "Early (5pm)" || slot === "Early (8am)" ? "early" : "regular";
+      return slot === "Early (5pm)" || slot === "Early (8am)"
+        ? "early"
+        : "regular";
     };
-      
 
     if (friday !== "" && role === "Driver") {
       await setDoc(
@@ -143,305 +162,426 @@ const RidesSignUp = () => {
     return true;
   };
 
-  const scrollToInput = (inputRef) => {
-    inputRef.current?.measureLayout(
-      scrollRef.current.getScrollResponder(),
-      (x, y) => scrollRef.current.scrollToPosition(0, y - 20),
-      (e) => console.warn('measureLayout failed', e)
-    );
-  };
+  // const scrollToInput = (inputRef) => {
+  //   inputRef.current?.measureLayout(
+  //     scrollRef.current.getScrollResponder(),
+  //     (x, y) => scrollRef.current.scrollToPosition(0, y - 20),
+  //     (e) => console.warn('measureLayout failed', e)
+  //   );
+  // };
 
   if (loadingData) {
     return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <View style={styles.loadingCard}>
+          <Text style={styles.loadingText}>Loading your information...</Text>
+        </View>
       </View>
     );
   }
 
   return (
-      <KeyboardAwareScrollView
-        ref={scrollRef}
-        contentContainerStyle={styles.scrollContainer}
-        enableOnAndroid={true}
-        enableAutomaticScroll={false}
-        extraScrollHeight={80}
-        keyboardShouldPersistTaps="handled"
-      >
+    <KeyboardAwareScrollView
+      ref={scrollRef}
+      contentContainerStyle={styles.scrollContainer}
+      enableOnAndroid={true}
+      enableAutomaticScroll={false}
+      extraScrollHeight={80}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={handleGoBack}>
           <Text style={styles.backButtonText}>← Back</Text>
         </Pressable>
+        <Text style={styles.title}>Rides Signup</Text>
+        <Text style={styles.subtitle}>Join us this week! 🚗</Text>
+      </View>
 
-        <View style={styles.question}>
-          <Text style={styles.title}>Rides Signup</Text>
-          <Text style={styles.text}>
-            Welcome! So excited that you are going to be joining us
-            this week. If you need a ride, please sign up!
-          </Text>
-          <Text style={styles.boldText}>Sunday Information:</Text>
-          <Text style={styles.text}>
-            Every Sunday we gather from all walks of life and all parts of the
-            city. After service, we will eat lunch together as a college
-            ministry, usually at restaurants nearby. Hope to see you this week!
-          </Text>
-          <Text style={styles.boldText}>Friday Information:</Text>
-          <Text style={styles.text}>
-            At the end of every week, on Friday nights, we meet together as a
-            community to share our walk in life. Also be on the lookout for the
-            occasional fellowship in place of the weekly community groups!
-          </Text>
-          <Text style={styles.redSmallText}>
-            Deadline for Friday rides is Thursday at 10PM and deadline for
-            Sunday rides is on Friday at 10PM. Please make sure to sign up on
-            time!
-          </Text>
-        </View>
+      <View style={styles.welcomeCard}>
+        <Text style={styles.welcomeTitle}>Welcome!</Text>
+        <Text style={styles.welcomeText}>
+          So excited that you are going to be joining us this week. If you need
+          a ride, please sign up!
+        </Text>
 
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Are you a...
-            <Text style={styles.required}> *</Text>
-          </Text>
-          {roleOptions.map((r) => (
-            <View key={r} style={styles.radioRow}>
-              <Pressable
-                style={[
-                  styles.radioButtonOuter,
-                  role === r && styles.radioButtonOuterSelected,
-                ]}
-                onPress={() => setRole(r)}
-              >
-                {role === r && <View style={styles.radioButtonInner} />}
-              </Pressable>
-              <Text style={styles.radioText}>{r}</Text>
-            </View>
-          ))}
-          {role === "Driver" && (
-            <>
-              <Text style={[styles.subtitle, { marginTop: 20 }]}>
-                How many passengers can you drive? (Excluding yourself)
-                <Text style={styles.required}> *</Text>
+        <View style={styles.infoCard}>
+          <View style={styles.infoHeader}>
+            <View style={styles.eventSection}>
+              <Text style={styles.eventTitle}>Sunday Gathering</Text>
+              <Text style={styles.eventText}>
+                Every Sunday we gather from all walks of life and all parts of
+                the city. After service, we eat lunch together as a college
+                ministry at nearby restaurants.
               </Text>
-              <TextInput
-                ref={capacityRef}
-                onFocus={() => scrollRef.current?.scrollToFocusedInput(capacityRef.current, 120)}
-                style={styles.input}
-                placeholder="e.g., 4"
-                placeholderTextColor="#888"
-                keyboardType="numeric"
-                value={capacity}
-                onChangeText={setCapacity}
-              />
-            </>
-          )}
-        </View>
 
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Select which days you want a ride:
-            <Text style={styles.required}> *</Text>
-          </Text>
-          <View style={styles.horizontalGroup}>
-            <View>
-              <Text style={styles.subsubtitle}>Friday</Text>
-              {fridayOptions.map((f) => (
-                <View key={f} style={styles.radioRow}>
-                  <Pressable
-                    style={[
-                      styles.radioButtonOuter,
-                      friday === f && styles.radioButtonOuterSelected,
-                    ]}
-                    onPress={() => setFriday(f)}
-                  >
-                    {friday === f && <View style={styles.radioButtonInner} />}
-                  </Pressable>
-                  <Text style={styles.radioText}>{f}</Text>
-                </View>
-              ))}
+              <Text style={styles.eventTitle}>Friday Community</Text>
+              <Text style={styles.eventText}>
+                Friday nights we meet as a community to share our walk in life.
+                Also watch for occasional fellowships in place of weekly
+                community groups!
+              </Text>
             </View>
           </View>
+        </View>
 
-          <View>
-            <Text style={styles.subsubtitle}>Sunday</Text>
-            {sundayOptions.map((s) => (
-              <View key={s} style={styles.radioRow}>
-                <Pressable
-                  style={[
-                    styles.radioButtonOuter,
-                    sunday === s && styles.radioButtonOuterSelected,
-                  ]}
-                  onPress={() => setSunday(s)}
-                >
-                  {sunday === s && <View style={styles.radioButtonInner} />}
-                </Pressable>
-                <Text style={styles.radioText}>{s}</Text>
+        <View style={styles.deadlineAlert}>
+          <Text style={styles.deadlineIcon}>⚠️</Text>
+          <View style={styles.deadlineContent}>
+            <Text style={styles.deadlineTitle}>Important Deadlines</Text>
+            <Text style={styles.deadlineText}>
+              • Friday rides: Thursday at 10PM
+            </Text>
+            <Text style={styles.deadlineText}>
+              • Sunday rides: Friday at 10PM
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>
+          Are you a...
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <View style={styles.optionsContainer}>
+          {roleOptions.map((r) => (
+            <Pressable
+              key={r}
+              style={[styles.optionButton, role === r && styles.selectedOption]}
+              onPress={() => setRole(r)}
+            >
+              <View
+                style={[
+                  styles.radioButton,
+                  role === r && styles.radioButtonSelected,
+                ]}
+              >
+                {role === r && <View style={styles.radioButtonInner} />}
               </View>
+              <Text
+                style={[
+                  styles.optionText,
+                  role === r && styles.selectedOptionText,
+                ]}
+              >
+                {r}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        {role === "Driver" && (
+          <View style={styles.driverSection}>
+            <Text style={styles.inputLabel}>
+              How many passengers can you drive? (Excluding yourself)
+              <Text style={styles.required}> *</Text>
+            </Text>
+            <TextInput
+              ref={capacityRef}
+              onFocus={() =>
+                scrollRef.current?.scrollToFocusedInput(
+                  capacityRef.current,
+                  120
+                )
+              }
+              style={styles.textInput}
+              placeholder="e.g., 4"
+              placeholderTextColor="#9ca3af"
+              keyboardType="numeric"
+              value={capacity}
+              onChangeText={setCapacity}
+            />
+          </View>
+        )}
+      </View>
+
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>
+          Select which days you want a ride
+          <Text style={styles.required}> *</Text>
+        </Text>
+
+        <View style={styles.daySection}>
+          <Text style={styles.dayTitle}>Friday</Text>
+          <View style={styles.optionsContainer}>
+            {fridayOptions.map((f) => (
+              <Pressable
+                key={f}
+                style={[
+                  styles.optionButton,
+                  friday === f && styles.selectedOption,
+                ]}
+                onPress={() => setFriday(f)}
+              >
+                <View
+                  style={[
+                    styles.radioButton,
+                    friday === f && styles.radioButtonSelected,
+                  ]}
+                >
+                  {friday === f && <View style={styles.radioButtonInner} />}
+                </View>
+                <Text
+                  style={[
+                    styles.optionText,
+                    friday === f && styles.selectedOptionText,
+                  ]}
+                >
+                  {f}
+                </Text>
+              </Pressable>
             ))}
           </View>
         </View>
 
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Would you like to join us for lunch?
-            <Text style={styles.required}> *</Text>
-          </Text>
-
-          {fellyOptions.map((f) => (
-            <View key={f} style={styles.radioRow}>
+        <View style={styles.daySection}>
+          <Text style={styles.dayTitle}>Sunday</Text>
+          <View style={styles.optionsContainer}>
+            {sundayOptions.map((s) => (
               <Pressable
+                key={s}
                 style={[
-                  styles.radioButtonOuter,
-                  felly === f && styles.radioButtonOuterSelected,
+                  styles.optionButton,
+                  sunday === s && styles.selectedOption,
                 ]}
-                onPress={() => setFelly(f)}
+                onPress={() => setSunday(s)}
+              >
+                <View
+                  style={[
+                    styles.radioButton,
+                    sunday === s && styles.radioButtonSelected,
+                  ]}
+                >
+                  {sunday === s && <View style={styles.radioButtonInner} />}
+                </View>
+                <Text
+                  style={[
+                    styles.optionText,
+                    sunday === s && styles.selectedOptionText,
+                  ]}
+                >
+                  {s}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>
+          Would you like to join us for lunch?
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <View style={styles.optionsContainer}>
+          {fellyOptions.map((f) => (
+            <Pressable
+              key={f}
+              style={[
+                styles.optionButton,
+                felly === f && styles.selectedOption,
+              ]}
+              onPress={() => setFelly(f)}
+            >
+              <View
+                style={[
+                  styles.radioButton,
+                  felly === f && styles.radioButtonSelected,
+                ]}
               >
                 {felly === f && <View style={styles.radioButtonInner} />}
-              </Pressable>
-              <Text style={styles.radioText}>{f}</Text>
-            </View>
+              </View>
+              <Text
+                style={[
+                  styles.optionText,
+                  felly === f && styles.selectedOptionText,
+                ]}
+              >
+                {f}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>
+          Where are you located?
+          <Text style={styles.required}> *</Text>
+        </Text>
+        <View style={styles.optionsContainer}>
+          {addressOptions.map((a) => (
+            <Pressable
+              key={a.value}
+              style={[
+                styles.optionButton,
+                address === a.value && styles.selectedOption,
+              ]}
+              onPress={() => setAddress(a.value)}
+            >
+              <View
+                style={[
+                  styles.radioButton,
+                  address === a.value && styles.radioButtonSelected,
+                ]}
+              >
+                {address === a.value && (
+                  <View style={styles.radioButtonInner} />
+                )}
+              </View>
+              <Text
+                style={[
+                  styles.optionText,
+                  address === a.value && styles.selectedOptionText,
+                ]}
+              >
+                {a.label}
+              </Text>
+            </Pressable>
           ))}
         </View>
 
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Where are you located?
-            <Text style={styles.required}> *</Text>
-          </Text>
-          
-          {addressOptions.map((a) => (
-            <View key={a.value} style={styles.radioRow}>
-              <Pressable
-                style={[
-                  styles.radioButtonOuter,
-                  address === a.value && styles.radioButtonOuterSelected,
-                ]}
-                onPress={() => setAddress(a.value)}
-              >
-                {address === a.value && <View style={styles.radioButtonInner} />}
-              </Pressable>
-              <Text style={styles.radioText}>{a.label}</Text>
-            </View>
-          ))}
-          {address === "Apartment" && (
+        {address === "Apartment" && (
+          <View style={styles.addressInputSection}>
+            <Text style={styles.inputLabel}>Apartment Address</Text>
             <TextInput
               ref={locationRef}
-              onFocus={() => scrollRef.current?.scrollToFocusedInput(locationRef.current, 120)}
-              style={styles.input}
-              placeholder="Enter apartment address"
-              placeholderTextColor="#888"
+              onFocus={() =>
+                scrollRef.current?.scrollToFocusedInput(
+                  locationRef.current,
+                  120
+                )
+              }
+              style={styles.textInput}
+              placeholder="Enter your apartment address"
+              placeholderTextColor="#9ca3af"
               value={customAddress}
               onChangeText={setCustomAddress}
             />
-          )}
-        </View>
-
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Please check this box if you are a newcomer!
-          </Text>
-          <View style={styles.section}>
-            <Checkbox
-              style={styles.checkbox}
-              value={isNewcomer}
-              onValueChange={setisNewcomer}
-            />
-            <Text style={styles.paragraph}>I am a newcomer!</Text>
           </View>
-        </View>
+        )}
+      </View>
 
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Rides are a privilege, not a right that everyone is
-            entitled to. Please be respectful and practice proper car
-            ettiquette!
-          </Text>
-          <Text style={styles.text}>
-            By signing up, you are committing to receiving a ride. If you are unable to uphold this commitment, you must
-            contact a ride coordinator or your driver at least 12 hours in
-            advance. Failure to do so will result in a warning strike;
-            repeated failure will lead to suspension from receiving rides from
-            the church for the remainder of the semester/quarter.
-          </Text>
-          <View style={styles.section}>
-            <Checkbox
-              style={styles.checkbox}
-              value={acknowledge}
-              onValueChange={setAcknowledge}
-            />
-            <Text style={styles.paragraph}>
-              I understand if I give less than 24 hrs for a cancellation, I will
-              be given a warning strike (or suspension, if I already have a
-              strike)
-              <Text style={styles.required}> *</Text>
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.question}>
-          <Text style={styles.subtitle}>
-            Any questions, comments, or concerns?
-          </Text>
-
-          <TextInput
-            ref={commentsRef}
-            onFocus={() => {
-              setCommentsFocused(true);
-              scrollRef.current?.scrollToFocusedInput(commentsRef.current, 120);
-            }}
-            onBlur={() => setCommentsFocused(false)}
-            style={styles.input}
-            placeholder="Enter here"
-            placeholderTextColor="#888"
-            value={comments}
-            onChangeText={setComments}
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>Newcomer Status</Text>
+        <Pressable
+          style={styles.checkboxRow}
+          onPress={() => setisNewcomer(!isNewcomer)}
+        >
+          <Checkbox
+            style={styles.checkbox}
+            value={isNewcomer}
+            onValueChange={setisNewcomer}
           />
+          <Text style={styles.checkboxText}>I am a newcomer!</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.termsCard}>
+        <View style={styles.termsHeader}>
+          <Text style={styles.termsIcon}>📋</Text>
+          <Text style={styles.termsTitle}>Ride Commitment Policy</Text>
         </View>
+
+        <Text style={styles.termsSubtitle}>
+          Rides are a privilege that requires mutual respect and proper car
+          etiquette.
+        </Text>
+
+        <Text style={styles.termsText}>
+          By signing up, you are committing to receiving a ride. If you cannot
+          uphold this commitment, you must contact a ride coordinator or your
+          driver at least 12 hours in advance. Failure to do so will result in a
+          warning strike; repeated failure will lead to suspension from
+          receiving rides for the remainder of the semester/quarter.
+        </Text>
 
         <Pressable
-          style={styles.button}
-          onPress={async () => {
-            // Make sure all requried questions are filled out
-            if (!role) {
-              alert("Please select whether you are a Passenger or Driver.");
-              return;
-            }
-            if (role === "Driver" && (!capacity || capacity.trim() === "")) {
-              alert("Please enter how many passengers you can drive.");
-              return;
-            }
+          style={styles.checkboxRow}
+          onPress={() => setAcknowledge(!acknowledge)}
+        >
+          <Checkbox
+            style={styles.checkbox}
+            value={acknowledge}
+            onValueChange={setAcknowledge}
+          />
+          <Text style={styles.acknowledgmentText}>
+            I understand if I give less than 24 hrs for a cancellation, I will
+            be given a warning strike (or suspension, if I already have a
+            strike)
+            <Text style={styles.required}> *</Text>
+          </Text>
+        </Pressable>
+      </View>
 
-            if (!friday && !sunday) {
-              alert("Please select at least one day you want a ride.");
-              return;
-            }
+      <View style={styles.questionCard}>
+        <Text style={styles.questionTitle}>
+          Any questions, comments, or concerns?
+        </Text>
+        <TextInput
+          ref={commentsRef}
+          onFocus={() => {
+            setCommentsFocused(true);
+            scrollRef.current?.scrollToFocusedInput(commentsRef.current, 120);
+          }}
+          onBlur={() => setCommentsFocused(false)}
+          style={styles.textAreaInput}
+          placeholder="Share any questions or special requests..."
+          placeholderTextColor="#9ca3af"
+          value={comments}
+          onChangeText={setComments}
+          multiline={true}
+          numberOfLines={4}
+        />
+      </View>
 
-            if (!felly) {
-              alert("Please select whether you are staying for lunch or going back early.");
-              return;
-            }
+      <Pressable
+        style={styles.submitButton}
+        onPress={async () => {
+          // Make sure all requried questions are filled out
+          if (!role) {
+            alert("Please select whether you are a Passenger or Driver.");
+            return;
+          }
+          if (role === "Driver" && (!capacity || capacity.trim() === "")) {
+            alert("Please enter how many passengers you can drive.");
+            return;
+          }
 
-            if (!address || (address === "Apartment" && customAddress.trim() === "")) {
-              alert("Please specify your pickup location.");
-              return;
-            }
+          if (!friday && !sunday) {
+            alert("Please select at least one day you want a ride.");
+            return;
+          }
 
-            if (!acknowledge) {
-              alert("You must acknowledge the ride commitment policy.");
-              return;
-            }
+          if (!felly) {
+            alert(
+              "Please select whether you are staying for lunch or going back early."
+            );
+            return;
+          }
+
+          if (
+            !address ||
+            (address === "Apartment" && customAddress.trim() === "")
+          ) {
+            alert("Please specify your pickup location.");
+            return;
+          }
+
+          if (!acknowledge) {
+            alert("You must acknowledge the ride commitment policy.");
+            return;
+          }
 
             const success = await addToRides();
             if (success) {
-              // navigation.navigate(role === "Driver" ? "Driver Home" : "Passenger Home", {
-              //   phoneNumber,
-              // });
               navigation.navigate("Rides");
             } else {
               alert("Could not submit. Please fill all required fields.");
             }
           }}
         >
-          <Text style={styles.buttonText}>Submit</Text>
+          <Text style={styles.submitButtonText}>Submit</Text>
         </Pressable>
         {commentsFocused && <View style={{ height: 150 }} />}
       </KeyboardAwareScrollView>
@@ -449,129 +589,337 @@ const RidesSignUp = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    padding: 20,
-    paddingBottom: 120,
-  },
   container: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    width: "100%",
+    backgroundColor: "#f8f9fa",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  loadingCard: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#6b7280",
+    textAlign: "center",
+  },
+  header: {
+    padding: 20,
+    paddingBottom: 0,
   },
   backButton: {
     alignSelf: "flex-start",
-    marginBottom: 20,
-    padding: 10,
+    marginBottom: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
   backButtonText: {
     fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  question: {
-    marginBottom: 20,
-    padding: 30,
-    justifyContent: "center",
-    alignItems: "left",
-    borderRadius: 5,
-    backgroundColor: "#f9f9f9",
-    width: "100%",
-  },
-  horizontalGroup: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 15,
+    color: "#4f46e5",
+    fontWeight: "600",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1a1a1a",
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    marginBottom: 10,
-    marginTop: 10,
+    color: "#6b7280",
+    fontWeight: "500",
   },
-  subsubtitle: {
+  welcomeCard: {
+    backgroundColor: "white",
+    margin: 20,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  welcomeTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 8,
+  },
+  welcomeText: {
     fontSize: 16,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  section: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-    gap: 10,
-  },
-  boldText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#555",
-  },
-  text: {
-    fontSize: 14,
-    marginBottom: 10,
-    color: "#555",
-  },
-  redSmallText: {
-    fontSize: 14,
-    marginBottom: 10,
-    color: "#f01e2c",
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
+    color: "#6b7280",
+    lineHeight: 22,
     marginBottom: 20,
-    width: "80%",
-    paddingLeft: 10,
   },
-  radioRow: {
+  infoCard: {
+    backgroundColor: "#fefbf3",
+    marginBottom: 20,
+    marginTop: 0,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#fed7aa",
+  },
+  infoHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
-    flexWrap: "wrap",
   },
-  radioText: {
-    marginLeft: 10,
+  infoIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ea580c",
+  },
+  eventSection: {
+    // marginBottom: 16,
+  },
+  eventTitle: {
     fontSize: 16,
+    fontWeight: "600",
+    color: "#9a3412",
+    marginBottom: 3,
   },
-  radioButtonOuter: {
+  eventText: {
+    fontSize: 14,
+    color: "#9a3412",
+    lineHeight: 20,
+    marginBottom: 25,
+  },
+  deadlineAlert: {
+    backgroundColor: "#fef2f2",
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    borderWidth: 1,
+    borderColor: "#fecaca",
+  },
+  deadlineIcon: {
+    fontSize: 16,
+    marginRight: 8,
+    marginTop: 2,
+  },
+  deadlineContent: {
+    flex: 1,
+  },
+  deadlineTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#dc2626",
+    marginBottom: 4,
+  },
+  deadlineText: {
+    fontSize: 13,
+    color: "#7f1d1d",
+  },
+  questionCard: {
+    backgroundColor: "white",
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  questionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 16,
+  },
+  optionsContainer: {
+    gap: 8,
+  },
+  optionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
+    backgroundColor: "#f9fafb",
+  },
+  selectedOption: {
+    borderColor: "#4f46e5",
+    backgroundColor: "#eef2ff",
+  },
+  radioButton: {
     height: 20,
     width: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#999",
+    borderColor: "#d1d5db",
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 12,
   },
-  radioButtonOuterSelected: {
-    borderColor: "#007AFF",
+  radioButtonSelected: {
+    borderColor: "#4f46e5",
   },
   radioButtonInner: {
     height: 10,
     width: 10,
     borderRadius: 5,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#4f46e5",
   },
-  button: {
-    backgroundColor: "black",
-    padding: 10,
-    borderRadius: 5,
+  optionText: {
+    fontSize: 16,
+    color: "#374151",
+    flex: 1,
+  },
+  selectedOptionText: {
+    color: "#4f46e5",
+    fontWeight: "500",
+  },
+  driverSection: {
     marginTop: 20,
-    marginBottom: 20,
-    width: "100%",
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
   },
-  buttonText: {
+  daySection: {
+    marginBottom: 20,
+  },
+  dayTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  textInput: {
+    backgroundColor: "#f9fafb",
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  textAreaInput: {
+    backgroundColor: "#f9fafb",
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#1a1a1a",
+    minHeight: 100,
+    textAlignVertical: "top",
+  },
+  addressInputSection: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  checkbox: {
+    marginTop: 2,
+  },
+  checkboxText: {
+    fontSize: 16,
+    color: "#374151",
+    flex: 1,
+    lineHeight: 22,
+  },
+  termsCard: {
+    backgroundColor: "#f0f9ff",
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#bae6fd",
+  },
+  termsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  termsIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  termsTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#0369a1",
+  },
+  termsSubtitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#0369a1",
+    marginBottom: 12,
+  },
+  termsText: {
+    fontSize: 14,
+    color: "#0c4a6e",
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  acknowledgmentText: {
+    fontSize: 14,
+    color: "#0c4a6e",
+    flex: 1,
+    lineHeight: 20,
+  },
+  submitButton: {
+    backgroundColor: "#4f46e5",
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 16,
+    paddingVertical: 18,
+    alignItems: "center",
+    shadowColor: "#4f46e5",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  submitButtonText: {
     color: "white",
     fontSize: 18,
-    textAlign: "center",
+    fontWeight: "600",
   },
   required: {
-    color: "#f01e2c", // red
+    color: "#dc2626",
+    fontWeight: "600",
   },
 });
 

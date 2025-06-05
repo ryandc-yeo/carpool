@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import db from "../../src/firebase-config";
@@ -77,118 +77,267 @@ const RidesHome = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Rides Home</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Rides Home</Text>
+          <Text style={styles.greeting}>
+            Hi {userData.fname} {userData.lname}!
+          </Text>
+        </View>
 
-      <Text style={styles.text}>
-        Hi {userData.fname} {userData.lname}! You can sign up and view available
-        rides here.
-      </Text>
-      <View style={styles.question}>
-        <Text style={styles.text}>
-          Please fill out this form each week. The deadlines for this week are:
-        </Text>
-        <Text style={styles.redText}>
-          • THURSDAY EVENING at 10PM for Friday rides ({fridayDate})
-        </Text>
-        <Text style={styles.redText}>
-          • FRIDAY EVENING at 10PM for Sunday rides ({sundayDate})
-        </Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Weekly Ride Sign-Up</Text>
+          <Text style={styles.cardSubtitle}>
+            Sign up for rides and connect with your church community.
+          </Text>
+
+          <View style={styles.importantCard}>
+            <View style={styles.deadlineContent}>
+              <Text style={styles.deadlineTitle}>
+                This Week&apos;s Deadlines
+              </Text>
+              <Text style={styles.deadlineText}>
+                Please sign up before these times to guarantee your spot:
+              </Text>
+              <View style={styles.deadlineItem}>
+                <View style={styles.deadlineDot} />
+                <Text style={styles.deadlineDetail}>
+                  <Text style={styles.deadlineDay}>Thursday 10PM</Text> for
+                  Friday rides ({fridayDate})
+                </Text>
+              </View>
+              <View style={styles.deadlineItem}>
+                <View style={styles.deadlineDot} />
+                <Text style={styles.deadlineDetail}>
+                  <Text style={styles.deadlineDay}>Friday 10PM</Text> for Sunday
+                  rides ({sundayDate})
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={[
+              styles.primaryButton,
+              ridesGenerated && styles.disabledButton,
+            ]}
+            onPress={handleSignUp}
+            disabled={ridesGenerated}
+          >
+            <Text
+              style={[
+                styles.primaryButtonText,
+                ridesGenerated && styles.disabledButtonText,
+              ]}
+            >
+              {ridesGenerated ? "Sign-up Closed" : "Sign Up for a Ride"}
+            </Text>
+            {ridesGenerated && (
+              <Text style={styles.buttonSubtext}>Rides have been assigned</Text>
+            )}
+          </Pressable>
+
+          {ridesGenerated ? (
+            <Pressable style={styles.primaryButton} onPress={handleViewRide("Friday")}>
+              <Text style={styles.primaryButtonText}>View Friday Rides</Text>
+            </Pressable>
+          ) : (
+            ""
+          )}
+
+          {ridesGenerated ? (
+            <Pressable style={styles.primaryButton} onPress={handleViewRide("Sunday")}>
+              <Text style={styles.primaryButtonText}>View Sunday Rides</Text>
+            </Pressable>
+          ) : (
+            ""
+          )}
+        </View>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.infoIcon}>ℹ️</Text>
+          <Text style={styles.infoText}>
+            You may only view the full rides list if you signed up for that
+            week.
+          </Text>
+        </View>
       </View>
-      <Text style={styles.text}>
-        Be sure to sign up before the deadline — spots may not be guaranteed
-        afterward.
-      </Text>
-
-      <Pressable
-        style={[styles.button, ridesGenerated && { backgroundColor: "#888" }]}
-        onPress={handleSignUp}
-        disabled={ridesGenerated}
-      >
-        <Text style={styles.buttonText}>
-          {ridesGenerated
-            ? "Sign-up Closed (Rides Assigned)"
-            : "Sign Up for a Ride"}
-        </Text>
-      </Pressable>
-
-      <Pressable style={styles.button} onPress={() => handleViewRide("Friday")}>
-        <Text style={styles.buttonText}>View Friday Rides</Text>
-      </Pressable>
-      
-      <Pressable style={styles.button} onPress={() => handleViewRide("Sunday")}>
-        <Text style={styles.buttonText}>View Sunday Rides</Text>
-      </Pressable>
-     
-      <Text style={styles.text}>
-        You may only view the full rides list if you have signed up for that
-        week.
-      </Text>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "top",
+    backgroundColor: "#f8f9fa",
+  },
+  content: {
     padding: 20,
+    paddingBottom: 40,
   },
-  backButton: {
-    alignSelf: "flex-start",
-    marginBottom: 20,
-    padding: 10,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: "#007AFF",
-    fontWeight: "500",
+  header: {
+    marginBottom: 24,
+    paddingTop: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1a1a1a",
+    marginBottom: 8,
   },
-  subtitle: {
+  greeting: {
     fontSize: 18,
-    marginBottom: 10,
-    marginTop: 10,
+    color: "#6b7280",
+    fontWeight: "500",
   },
-  text: {
+  card: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 36,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 8,
+  },
+  cardSubtitle: {
     fontSize: 16,
-    marginBottom: 10,
-    marginTop: 10,
-    color: "#555",
+    color: "#6b7280",
+    lineHeight: 22,
+    marginBottom: 16,
   },
-  redText: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: "#f01e2c",
-    fontWeight: "bold",
+  importantCard: {
+    backgroundColor: "#fef3f2",
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#fecaca",
+    flexDirection: "row",
   },
-  button: {
-    backgroundColor: "black",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
+  iconContainer: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  clockIcon: {
+    fontSize: 20,
+  },
+  deadlineContent: {
+    flex: 1,
+  },
+  deadlineTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#dc2626",
+    marginBottom: 8,
+  },
+  deadlineText: {
+    fontSize: 15,
+    color: "#7f1d1d",
+    marginBottom: 12,
+  },
+  deadlineItem: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
+    marginBottom: 8,
   },
-
-  buttonText: {
-    color: "white",
-    fontSize: 18,
+  deadlineDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#dc2626",
+    marginRight: 10,
   },
-  question: {
+  deadlineDetail: {
+    fontSize: 15,
+    color: "#7f1d1d",
+    flex: 1,
+  },
+  deadlineDay: {
+    fontWeight: "600",
+  },
+  buttonContainer: {
+    gap: 12,
     marginBottom: 20,
-    padding: 30,
-    justifyContent: "center",
-    alignItems: "left",
-    borderRadius: 5,
-    backgroundColor: "#f9f9f9",
-    width: "100%",
+  },
+  primaryButton: {
+    backgroundColor: "#4f46e5",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    shadowColor: "#4f46e5",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  disabledButton: {
+    backgroundColor: "#e5e7eb",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  primaryButtonText: {
+    color: "white",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  disabledButtonText: {
+    color: "#9ca3af",
+  },
+  buttonSubtext: {
+    color: "#9ca3af",
+    fontSize: 13,
+    marginTop: 4,
+  },
+  secondaryButton: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
+  },
+  secondaryButtonText: {
+    color: "#374151",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  infoCard: {
+    backgroundColor: "#f0f9ff",
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    borderWidth: 1,
+    borderColor: "#bae6fd",
+  },
+  infoIcon: {
+    fontSize: 16,
+    marginRight: 10,
+    marginTop: 1,
+  },
+  infoText: {
+    fontSize: 14,
+    color: "#0369a1",
+    flex: 1,
+    lineHeight: 20,
   },
 });
 
