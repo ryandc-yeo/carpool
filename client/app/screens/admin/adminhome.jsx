@@ -6,9 +6,9 @@ import db from "../../src/firebase-config";
 const AdminHome = () => {
     const [cars, setCars] = useState([]);
 
-    const fetchPeople = async () => {
-        const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
-        const passengersSnapshot = await getDocs(collection(db, "Sunday Passengers"));
+    const fetchPeople = async (day) => {
+        const driversSnapshot = await getDocs(collection(db, `${day} Drivers`));
+        const passengersSnapshot = await getDocs(collection(db, `${day} Passengers`));
 
         const drivers = driversSnapshot.docs.map(doc => ({
             phoneNumber: doc.id,
@@ -27,6 +27,7 @@ const AdminHome = () => {
     // 1. same pickup time: "early"
     // 2. same felly: "felly" or "no felly"
     // 3. location: "hill", "south of wilshire", "north of wilshire"
+    // 4. then do regular car ppl
     const assignCars = (drivers, passengers) => {
         const cars = [];
         let unassignedPassengers = [...passengers];
@@ -50,7 +51,8 @@ const AdminHome = () => {
             if (driver.time === "early") {
                 // early drivers need to have early passengers
                 const earlyPassengers = unassignedPassengers.filter(p => p.time === "early");
-                const regularPassengers = unassignedPassengers.filter(p => p.time !== "early");
+                const noPrefPassengers = unassignedPassengers.filter(p => p.time === "no_preference");
+                const regularPassengers = unassignedPassengers.filter(p => p.time === "regular");
                 priorityGroups.push(
                     // 1. early + same felly + same location
                     earlyPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
@@ -60,6 +62,8 @@ const AdminHome = () => {
                     earlyPassengers.filter(p => p.felly !== driver.felly && p.location === driver.location),
                     // 4. early + diff felly + diff location
                     earlyPassengers.filter(p => p.felly !== driver.felly && p.location !== driver.location),
+                    // 4.5 no pref 
+                    noPrefPassengers,
                     // 5. reg + same felly + same location
                     regularPassengers.filter(p => p.felly === driver.felly && p.location === driver.location),
                     // 6. reg + same felly + diff location
@@ -111,39 +115,39 @@ const AdminHome = () => {
         return cars;
     };
 
-    const updateAssignmentsInFirestore = async (cars) => {
+    const updateAssignmentsInFirestore = async (cars, day) => {
         for (const car of cars) {
-            const driverRef = doc(db, "Sunday Drivers", car.driver.phoneNumber);
+            const driverRef = doc(db, `${day} Drivers`, car.driver.phoneNumber);
 
             await updateDoc(driverRef, {
                 passengers: car.passengers.map(p => ({
-                    phoneNumber: p.phoneNumber,
-                    fname: p.fname,
-                    lname: p.lname,
-                    address: p.address, 
-                    felly: p.felly,
-                    time: p.time,
+                    phoneNumber: p.phoneNumber || "",
+                    fname: p.fname || "",
+                    lname: p.lname || "",
+                    address: p.address || "", 
+                    felly: p.felly || "",
+                    time: p.time || "",
                 }))
             });
 
             for (const passenger of car.passengers) {
-                const passengerRef = doc(db, "Sunday Passengers", passenger.phoneNumber);
+                const passengerRef = doc(db, `${day} Passengers`, passenger.phoneNumber);
                 await updateDoc(passengerRef, {
                     driver: {
-                        phoneNumber: car.driver.phoneNumber,
-                        fname: car.driver.fname,
-                        lname: car.driver.lname
+                        phoneNumber: car.driver.phoneNumber || "",
+                        fname: car.driver.fname || "",
+                        lname: car.driver.lname || ""
                     }
                 });
             }
         }
     };
 
-    const organizeRides = async () => {
+    const organizeRides = async (day) => {
         try {
-            const { drivers, passengers } = await fetchPeople();
+            const { drivers, passengers } = await fetchPeople(day);
             const cars = assignCars(drivers, passengers);
-            await updateAssignmentsInFirestore(cars);
+            await updateAssignmentsInFirestore(cars, day);
             alert("Cars have been assigned.");
             setCars(cars);
         } catch (error) {
@@ -155,11 +159,11 @@ const AdminHome = () => {
         }, { merge: true });
     };
 
-    const resetAssignments = async () => {
+    const resetAssignments = async (day) => {
         try {
-            const passengersSnapshot = await getDocs(collection(db, "Sunday Passengers"));
+            const passengersSnapshot = await getDocs(collection(db, `${day} Passengers`));
             for (const docSnap of passengersSnapshot.docs) {
-                const passengerRef = doc(db, "Sunday Passengers", docSnap.id);
+                const passengerRef = doc(db, `${day} Passengers`, docSnap.id);
                 await updateDoc(passengerRef, {
                     driver: null,
                     acknowledged: false,
@@ -167,9 +171,9 @@ const AdminHome = () => {
                 });
             }
 
-            const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
+            const driversSnapshot = await getDocs(collection(db, `${day} Drivers`));
             for (const docSnap of driversSnapshot.docs) {
-                const driverRef = doc(db, "Sunday Drivers", docSnap.id);
+                const driverRef = doc(db, `${day} Drivers`, docSnap.id);
                 await updateDoc(driverRef, {
                     passengers: []
                 });
@@ -192,14 +196,26 @@ const AdminHome = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Rides Home</Text>
 
+            {/* for friday rides */}
+            <Text style={styles.title}>Friday Rides</Text>
+            <View style={styles.buttonContainer}>
+                <Pressable style={styles.button} onPress={() => organizeRides("Friday")}>
+                    <Text style={styles.buttonText}>Generate Friday Car Assignments</Text>
+                </Pressable>
+
+                <Pressable style={[styles.button, { backgroundColor: 'red' }]} onPress={() => resetAssignments("Friday")}>
+                    <Text style={styles.buttonText}>Reset Friday Assignments</Text>
+                </Pressable>
+            </View>
+
             {/* for sunday rides */}
             <Text style={styles.title}>Sunday Rides</Text>
             <View style={styles.buttonContainer}>
-                <Pressable style={styles.button} onPress={organizeRides}>
+                <Pressable style={styles.button} onPress={() => organizeRides("Sunday")}>
                     <Text style={styles.buttonText}>Generate Sunday Car Assignments</Text>
                 </Pressable>
 
-                <Pressable style={[styles.button, { backgroundColor: 'red' }]} onPress={resetAssignments}>
+                <Pressable style={[styles.button, { backgroundColor: 'red' }]} onPress={() => resetAssignments("Sunday")}>
                     <Text style={styles.buttonText}>Reset Sunday Assignments</Text>
                 </Pressable>
             </View>

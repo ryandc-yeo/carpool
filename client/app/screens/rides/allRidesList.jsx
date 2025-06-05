@@ -7,7 +7,7 @@ import db from "../../src/firebase-config";
 const AllRidesList = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { phoneNumber, role } = route.params || {};
+    const { phoneNumber, role, day } = route.params || {};
 
     const [carGroups, setCarGroups] = useState([]);
     const [waitlist, setWaitlist] = useState([]);
@@ -31,17 +31,49 @@ const AllRidesList = () => {
             return "Regular";
         } else if (time === "early") {
             return "Early";
-        } 
+        } else if (time === "no_preference") {
+            return "No Preference"
+        }
         return time;
     }
 
     const handleGoBack = () => {
         if (role === "Driver") {
-            navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
+            navigation.navigate("Driver Home", { phoneNumber: phoneNumber, day: day});
         } else {
-            navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
+            navigation.navigate("Passenger Home", { phoneNumber: phoneNumber, day: day});
         }
     };
+
+    // grouping passengers for ubers
+    function groupPassengers(passengers) {
+        const groups = [];
+        let i = 0;
+
+        while (i < passengers.length) {
+            const remaining = passengers.length - i;
+
+            if (remaining === 5) {
+                // group of five better than four 
+                groups.push(passengers.slice(i, i + 5));
+                i += 5;
+            } else if (remaining >= 6) {
+                // prefer groups of six
+                groups.push(passengers.slice(i, i + 6));
+                i += 6;
+            } else if (remaining >= 4) {
+                // otherwise do groups of four
+                groups.push(passengers.slice(i, i + 4));
+                i += 4;
+            } else {
+                // less than four, group as is
+                groups.push(passengers.slice(i));
+                break;
+            }
+        }
+
+        return groups;
+    }
 
     useFocusEffect(
         useCallback(() => {
@@ -56,7 +88,7 @@ const AllRidesList = () => {
                     return;
                 }
 
-                const driversSnapshot = await getDocs(collection(db, "Sunday Drivers"));
+                const driversSnapshot = await getDocs(collection(db, `${day} Drivers`));
                 const groups = driversSnapshot.docs.map(docSnap => {
                     const data = docSnap.data();
                     return {
@@ -71,7 +103,7 @@ const AllRidesList = () => {
                     };
                 });
 
-                const passengersSnapshot = await getDocs(collection(db, "Sunday Passengers"));
+                const passengersSnapshot = await getDocs(collection(db, `${day} Passengers`));
                 const waitlist = passengersSnapshot.docs.map(docSnap =>{
                     const data = docSnap.data(); 
                     if (data.driver == null) {
@@ -89,7 +121,7 @@ const AllRidesList = () => {
             });
 
             return () => unsubscribe(); // clean up on unmount
-        }, [role])
+        }, [day, role])
     );
     
 
@@ -109,7 +141,7 @@ const AllRidesList = () => {
                     <Text style={styles.backButtonText}>← Back</Text>
                 </Pressable>
             </View>
-            <Text style={styles.title}>Sunday Rides</Text>
+            <Text style={styles.title}>{day} Rides</Text>
 
             {carGroups.map((group, index) => (
                 <View key={index} style={styles.card}>
@@ -150,15 +182,24 @@ const AllRidesList = () => {
                     )}
                 </View>
             ))}
-            <View style={styles.card}>
-                <Text style={styles.cardTitle}>Waitlist</Text>
-                {waitlist.map((passenger, index) => (
-                    <Text key={index} style={[styles.cardText, passenger.id === phoneNumber && {fontWeight: "bold", color: "#007AFF"}]}>
-                        {formatTextDisplay(passenger.fname, passenger.lname, passenger.felly, passenger.time)}
-                        {passenger.id === phoneNumber && " (You)"}
-                    </Text>
-                ))}
+
+            {groupPassengers(waitlist).map((group, groupIndex) => (
+                <View key={groupIndex} style={styles.card}>
+                    <Text style={styles.cardTitle}>Uber Group {groupIndex + 1}</Text>
+                    {group.map((passenger, index) => (
+                        <Text 
+                            key={index} 
+                            style={[
+                                styles.cardText, 
+                                passenger.id === phoneNumber && { fontWeight: "bold", color: "#007AFF" }
+                            ]}
+                        >
+                            {formatTextDisplay(passenger.fname, passenger.lname, passenger.felly, passenger.time)}
+                            {passenger.id === phoneNumber && " (You)"}
+                        </Text>
+                    ))}
             </View>
+            ))}
         </ScrollView>
     );
 };

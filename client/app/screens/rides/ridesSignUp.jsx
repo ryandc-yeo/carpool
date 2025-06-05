@@ -82,8 +82,9 @@ const RidesSignUp = () => {
           lname: userData.lname,
           grade: userData.grade,
           address: finalAddress,
-          time: timeValue(friday),
+          time: timeValue(sunday),
           capacity: capacity,
+          felly: felly,
           newcomer: isNewcomer,
           comments: comments,
         },
@@ -97,7 +98,8 @@ const RidesSignUp = () => {
           lname: userData.lname,
           grade: userData.grade,
           address: finalAddress,
-          time: timeValue(friday),
+          time: timeValue(sunday),
+          felly: felly,
           newcomer: isNewcomer,
           comments: comments,
         },
@@ -430,9 +432,10 @@ const RidesSignUp = () => {
 
             const success = await addToRides();
             if (success) {
-              navigation.navigate(role === "Driver" ? "Driver Home" : "Passenger Home", {
-                phoneNumber,
-              });
+              // navigation.navigate(role === "Driver" ? "Driver Home" : "Passenger Home", {
+              //   phoneNumber,
+              // });
+              navigation.navigate("Rides");
             } else {
               alert("Could not submit. Please fill all required fields.");
             }

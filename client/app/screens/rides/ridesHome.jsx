@@ -17,17 +17,20 @@ const RidesHome = () => {
     navigation.navigate("Rides SignUp", { phoneNumber: phoneNumber });
   };
 
-  const handleViewRide = async () => {
-    const driverDoc = await getDoc(doc(db, "Sunday Drivers", phoneNumber));
+  const handleViewRide = async (day) => {
+    const driverDoc = await getDoc(doc(db, `${day} Drivers`, phoneNumber));
     if (driverDoc.exists()) {
-      navigation.navigate("Driver Home", { phoneNumber: phoneNumber });
+      navigation.navigate("Driver Home", { phoneNumber, day });
+      return;
     }
 
-    const passDoc = await getDoc(doc(db, "Sunday Passengers", phoneNumber));
+    const passDoc = await getDoc(doc(db, `${day} Passengers`, phoneNumber));
     if (passDoc.exists()) {
-      navigation.navigate("Passenger Home", { phoneNumber: phoneNumber });
+      navigation.navigate("Passenger Home", { phoneNumber, day });
+      return;
     }
   };
+
 
   // Not sure how this function works entirely, so can change later. For now, updates fine
   useEffect(() => {
@@ -109,9 +112,14 @@ const RidesHome = () => {
         </Text>
       </Pressable>
 
-      <Pressable style={styles.button} onPress={handleViewRide}>
+      <Pressable style={styles.button} onPress={() => handleViewRide("Friday")}>
+        <Text style={styles.buttonText}>View Friday Rides</Text>
+      </Pressable>
+      
+      <Pressable style={styles.button} onPress={() => handleViewRide("Sunday")}>
         <Text style={styles.buttonText}>View Sunday Rides</Text>
       </Pressable>
+     
       <Text style={styles.text}>
         You may only view the full rides list if you have signed up for that
         week.
