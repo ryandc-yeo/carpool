@@ -137,9 +137,13 @@ const RidesHome = () => {
             )}
           </Pressable>
 
-          <Pressable style={styles.secondaryButton} onPress={handleViewRide}>
-            <Text style={styles.secondaryButtonText}>View Sunday Rides</Text>
-          </Pressable>
+          {ridesGenerated ? (
+            <Pressable style={styles.primaryButton} onPress={handleViewRide}>
+              <Text style={styles.primaryButtonText}>View Sunday Rides</Text>
+            </Pressable>
+          ) : (
+            ""
+          )}
         </View>
 
         <View style={styles.infoCard}>
