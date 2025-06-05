@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { AuthProvider, useAuth } from './src/util/AuthContext';
-import HamburgerMenu from './src/components/hamburgermenu';
+import { AuthProvider, useAuth } from "./src/util/AuthContext";
+import HamburgerMenu from "./src/components/hamburgermenu";
 
 export default function Layout() {
   return (
@@ -13,7 +13,7 @@ export default function Layout() {
 
 const AppEntryPoint = () => {
   const { loading } = useAuth();
-  
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -22,8 +22,8 @@ const AppEntryPoint = () => {
     );
   }
 
-  return <HamburgerMenu />
-}
+  return <HamburgerMenu />;
+};
 
 const styles = StyleSheet.create({
   center: {

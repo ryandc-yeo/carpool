@@ -39,6 +39,7 @@ app.post("/send-verification", async (req, res) => {
         error: "Invalid phone number format",
       });
     }
+    // const phoneNumber = process.env.YOUR_PHONE_NO;
 
     const verification = await client.verify.v2
       .services(verifySid)
@@ -81,6 +82,7 @@ app.post("/send-verification", async (req, res) => {
 app.post("/verify-code", async (req, res) => {
   try {
     const { phoneNumber, code } = req.body;
+    // phoneNumber = process.env.YOUR_PHONE_NO;
 
     if (!phoneNumber || !code) {
       return res.status(400).json({

@@ -43,6 +43,8 @@ const DrawerNavigator = () => {
 
   const initialRoute = phoneNumber ? "Rides" : "Login";
 
+  const isProd = false;
+
   return (
     <Drawer.Navigator initialRouteName={initialRoute}>
       {allScreens.map((screen) => (
