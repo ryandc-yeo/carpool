@@ -154,85 +154,6 @@ const AllRidesList = () => {
     );
   }
 
-  //   return (
-  // <ScrollView contentContainerStyle={styles.container}>
-  //   <View style={styles.headerRow}>
-  //     <Pressable style={styles.backButton} onPress={handleGoBack}>
-  //       <Text style={styles.backButtonText}>← Back</Text>
-  //     </Pressable>
-  //   </View>
-  //   <Text style={styles.title}>Sunday Rides</Text>
-
-  //   {carGroups.map((group, index) => (
-  //     <View key={index} style={styles.card}>
-  //       <Text style={styles.cardTitle}>
-  //         🚗 Car {index + 1} - {formatTime(group.driver.time)} -{" "}
-  //         {formatFellyDisplay(group.driver.felly)}{" "}
-  //       </Text>
-  //       <Text
-  //         style={[
-  //           styles.cardText,
-  //           group.driver.phoneNumber === phoneNumber && {
-  //             fontWeight: "bold",
-  //             color: "#007AFF",
-  //           },
-  //         ]}
-  //       >
-  //         <Text style={{ fontWeight: "600" }}>Driver: </Text>
-  //         {group.driver.fname} {group.driver.lname}
-  //         {group.driver.phoneNumber === phoneNumber && " (You)"}
-  //       </Text>
-
-  //       <Text style={[styles.cardText, { fontWeight: "600", marginTop: 2 }]}>
-  //         Passengers:
-  //       </Text>
-  //       {group.passengers.length > 0 ? (
-  //         group.passengers.map((p, i) => {
-  //           const isCurrentUser = p.phoneNumber === phoneNumber;
-  //           return (
-  //             <Text
-  //               key={i}
-  //               style={[
-  //                 styles.cardText,
-  //                 isCurrentUser && { fontWeight: "bold", color: "#007AFF" },
-  //               ]}
-  //             >
-  //               {formatTextDisplay(p.fname, p.lname, p.felly, p.time)}
-  //               {isCurrentUser && " (You)"}
-  //             </Text>
-  //           );
-  //         })
-  //       ) : (
-  //         <Text style={styles.passenger}>None assigned</Text>
-  //       )}
-  //     </View>
-  //   ))}
-  //   <View style={styles.card}>
-  //     <Text style={styles.cardTitle}>Waitlist</Text>
-  //     {waitlist.map((passenger, index) => (
-  //       <Text
-  //         key={index}
-  //         style={[
-  //           styles.cardText,
-  //           passenger.id === phoneNumber && {
-  //             fontWeight: "bold",
-  //             color: "#007AFF",
-  //           },
-  //         ]}
-  //       >
-  //         {formatTextDisplay(
-  //           passenger.fname,
-  //           passenger.lname,
-  //           passenger.felly,
-  //           passenger.time
-  //         )}
-  //         {passenger.id === phoneNumber && " (You)"}
-  //       </Text>
-  //     ))}
-  //   </View>
-  // </ScrollView>
-  //   );
-
   return (
     <ScrollView
       style={styles.container}
@@ -337,10 +258,10 @@ const AllRidesList = () => {
           {/* Passengers */}
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>
-              Passengers ({group.passengers.length})
+              Passengers ({group.length})
             </Text>
-            {group.passengers.length > 0 ? (
-              group.passengers.map((p, i) => {
+            {group.length > 0 ? (
+              group.map((p, i) => {
                 const isCurrentUser = p.phoneNumber === phoneNumber;
                 return (
                   <Text

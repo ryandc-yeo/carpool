@@ -13,6 +13,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import db from "../../src/firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import fetchUserData from "../../src/util/utilities";
+import { useAuth } from "../../src/util/AuthContext";
 
 const RidesSignUp = () => {
   const scrollRef = useRef(null);
@@ -54,6 +55,7 @@ const RidesSignUp = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { phoneNumber } = route.params;
+  const { setGoingFriday, setGoingSunday } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -82,6 +84,17 @@ const RidesSignUp = () => {
     if (!userData || !userData.fname) {
       alert("User data not loaded yet");
       return;
+    }
+
+    if (friday !== "") {
+      setGoingFriday(true);
+    } else {
+      setGoingFriday(false);
+    }
+    if (sunday !== "") {
+      setGoingSunday(true);
+    } else {
+      setGoingSunday(false);
     }
 
     const finalAddress = address === "Apartment" ? customAddress : address;
@@ -161,14 +174,6 @@ const RidesSignUp = () => {
 
     return true;
   };
-
-  // const scrollToInput = (inputRef) => {
-  //   inputRef.current?.measureLayout(
-  //     scrollRef.current.getScrollResponder(),
-  //     (x, y) => scrollRef.current.scrollToPosition(0, y - 20),
-  //     (e) => console.warn('measureLayout failed', e)
-  //   );
-  // };
 
   if (loadingData) {
     return (

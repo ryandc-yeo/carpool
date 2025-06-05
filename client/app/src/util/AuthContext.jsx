@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [goingFriday, setGoingFriday] = useState(false);
+  const [goingSunday, setGoingSunday] = useState(false);
 
   useEffect(() => {
     const restorePhoneNumber = async () => {
@@ -49,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ phoneNumber, setPhoneNumber, login, logout, userData, setUserData, loading }}>
+    <AuthContext.Provider value={{ phoneNumber, setPhoneNumber, login, logout, userData, setUserData, loading, goingFriday, setGoingFriday, goingSunday, setGoingSunday }}>
       {children}
     </AuthContext.Provider>
   );

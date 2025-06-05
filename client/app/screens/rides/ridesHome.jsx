@@ -7,7 +7,7 @@ import { useAuth } from "../../src/util/AuthContext";
 
 const RidesHome = () => {
   const navigation = useNavigation();
-  const { phoneNumber, userData } = useAuth();
+  const { phoneNumber, userData, goingFriday, goingSunday } = useAuth();
 
   const [fridayDate, setFridayDate] = useState("");
   const [sundayDate, setSundayDate] = useState("");
@@ -31,8 +31,6 @@ const RidesHome = () => {
     }
   };
 
-
-  // Not sure how this function works entirely, so can change later. For now, updates fine
   useEffect(() => {
     const calculateDates = () => {
       const today = new Date();
@@ -140,21 +138,41 @@ const RidesHome = () => {
             )}
           </Pressable>
 
-          {ridesGenerated ? (
-            <Pressable style={styles.primaryButton} onPress={handleViewRide("Friday")}>
-              <Text style={styles.primaryButtonText}>View Friday Rides</Text>
-            </Pressable>
-          ) : (
-            ""
-          )}
-
-          {ridesGenerated ? (
-            <Pressable style={styles.primaryButton} onPress={handleViewRide("Sunday")}>
-              <Text style={styles.primaryButtonText}>View Sunday Rides</Text>
-            </Pressable>
-          ) : (
-            ""
-          )}
+          <Pressable
+            style={[
+              styles.primaryButton,
+              !goingFriday && styles.disabledButton,
+            ]} 
+            onPress={() => handleViewRide("Friday")}
+            disabled={!goingFriday}
+          >
+            <Text
+              style={[
+                styles.primaryButtonText,
+                !goingFriday && styles.disabledButtonText,
+              ]}
+            >
+              View Friday Rides
+            </Text>
+          </Pressable>
+          
+          <Pressable
+            style={[
+              styles.primaryButton,
+              !goingSunday && styles.disabledButton,
+            ]} 
+            onPress={() => handleViewRide("Sunday")}
+            disabled={!goingSunday}
+          >
+            <Text
+              style={[
+                styles.primaryButtonText,
+                !goingSunday && styles.disabledButtonText,
+              ]}
+            >
+              View Sunday Rides
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.infoCard}>

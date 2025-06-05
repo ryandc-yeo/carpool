@@ -46,7 +46,7 @@ const PassengerHome = () => {
   };
 
   useEffect(() => {
-      if (!phoneNumber || !day) return;
+    if (!phoneNumber || !day) return;
 
     const unsubscribe = onSnapshot(doc(db, `${day} Passengers`, phoneNumber), (docSnap) => {
       if (docSnap.exists()) {
@@ -129,9 +129,11 @@ const PassengerHome = () => {
           <Pressable style={styles.backButton} onPress={handleGoBack}>
             <Text style={styles.backButtonText}>← Back</Text>
           </Pressable>
-          <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
-            <Text style={styles.viewAllButtonText}>View All Rides</Text>
-          </Pressable>
+          {ridesGenerated && 
+            <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
+              <Text style={styles.viewAllButtonText}>View All Rides</Text>
+            </Pressable>
+          }
         </View>
 
         <View style={styles.welcomeSection}>
@@ -256,13 +258,12 @@ const PassengerHome = () => {
       ) : (
         // Assignment Pending State
         <View style={styles.assignmentCard}>
-          \
           <View style={styles.assignmentContent}>
             <Text style={styles.assignmentTitle}>
               We&apos;re Organizing Rides!
             </Text>
             <Text style={styles.assignmentText}>
-              Car assignments haven&apos;t been released yet. Check back later
+              Thanks for signing up! Car assignments haven&apos;t been released yet. Please check back later
               for your pickup details!
             </Text>
             <View style={styles.scheduleInfo}>
