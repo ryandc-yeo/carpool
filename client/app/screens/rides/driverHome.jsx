@@ -1,13 +1,24 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
-import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import db from "../../src/firebase-config";
 
 const DriverHome = () => {
   const navigation = useNavigation();
-  const route = useRoute(); 
-  const { phoneNumber, day} = route.params || {};
+  const route = useRoute();
+  const { phoneNumber, day } = route.params || {};
   const [passengers, setPassengers] = useState([]);
   const [pickupTimes, setPickupTimes] = useState({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -16,12 +27,16 @@ const DriverHome = () => {
   const [loading, setLoading] = useState(true);
 
   const handleGoBack = () => {
-    navigation.navigate("Rides", { phoneNumber: phoneNumber, });
+    navigation.navigate("Rides", { phoneNumber: phoneNumber });
   };
 
   const handleAllRides = () => {
-    navigation.navigate("Ride Details", { phoneNumber: phoneNumber, role: "Driver", day: day});
-  }
+    navigation.navigate("Ride Details", {
+      phoneNumber: phoneNumber,
+      role: "Driver",
+      day: day,
+    });
+  };
 
   const fetchDriverData = async () => {
     const driverRef = doc(db, `${day} Drivers`, phoneNumber);
@@ -37,24 +52,27 @@ const DriverHome = () => {
   useEffect(() => {
     if (!phoneNumber || !day) return;
 
-    const unsubscribe = onSnapshot(doc(db, `${day} Drivers`, phoneNumber), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setDriverData(data);
-        setPassengers(data.passengers || []);
-        setPickupTimes(
-          Object.fromEntries(
-            (data.passengers || []).map((p) => [
-              p.phoneNumber,
-              p.pickupTime || "",
-            ])
-          )
-        );
-      } else {
-        setDriverData(null);
+    const unsubscribe = onSnapshot(
+      doc(db, `${day} Drivers`, phoneNumber),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setDriverData(data);
+          setPassengers(data.passengers || []);
+          setPickupTimes(
+            Object.fromEntries(
+              (data.passengers || []).map((p) => [
+                p.phoneNumber,
+                p.pickupTime || "",
+              ])
+            )
+          );
+        } else {
+          setDriverData(null);
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
 
     return () => unsubscribe();
   }, [phoneNumber, day]);
@@ -108,10 +126,7 @@ const DriverHome = () => {
     );
   }
 
-  const {
-    fname = "",
-    lname = "",
-  } = driverData || {};
+  const { fname = "", lname = "" } = driverData || {};
 
   return (
     <ScrollView
@@ -124,14 +139,18 @@ const DriverHome = () => {
           <Pressable style={styles.backButton} onPress={handleGoBack}>
             <Text style={styles.backButtonText}>← Back</Text>
           </Pressable>
-          {ridesGenerated && 
+          {ridesGenerated && (
             <Pressable style={styles.viewAllButton} onPress={handleAllRides}>
               <Text style={styles.viewAllButtonText}>View All Rides</Text>
             </Pressable>
-          }
+          )}
         </View>
 
         <View style={styles.welcomeSection}>
+          <View style={styles.driverBadge}>
+            <Text style={styles.driverIcon}>🚗</Text>
+            <Text style={styles.driverLabel}>Driver</Text>
+          </View>
           <Text style={styles.welcomeTitle}>Welcome back!</Text>
           <Text style={styles.welcomeName}>
             {fname} {lname}
@@ -141,66 +160,124 @@ const DriverHome = () => {
 
       {ridesGenerated ? (
         <>
-          <Text style={styles.header}>Your Passengers for {day}</Text>
           {hasSubmitted && (
-            <View style={styles.submissionBanner}>
-              <Text style={styles.submissionText}>Pickup times submitted successfully.</Text>
+            <View style={styles.successBanner}>
+              <Text style={styles.successIcon}>✅</Text>
+              <Text style={styles.successText}>
+                Pickup times submitted successfully!
+              </Text>
             </View>
           )}
 
-          {passengers.map((p, index) => (
-            <View key={index} style={styles.card}>
-              <Text style={styles.cardTitle}>
-                {p.fname} {p.lname}
-              </Text>
-
-              <Text style={styles.cardText}>
-                <Text style={{ fontWeight: "600" }}>Address:</Text> {p.address || "Not provided"}
-              </Text> 
-              <Text style={styles.cardText}>
-                <Text style={{ fontWeight: "600" }}>Phone:</Text> {p.phoneNumber}
-              </Text>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Enter pickup time"
-                placeholderTextColor="#D3D3D3" //
-                value={pickupTimes[p.phoneNumber] || ""}
-                onChangeText={(text) => handleTimeChange(p.phoneNumber, text)}
-              />
-
-              <Text style={[styles.cardText, { marginTop: 10 }]}>
-                Acknowledged:{" "}
-                <Text style={{ color: p.acknowledged ? "#228B22" : "#cc0000", fontWeight: "600" }}>
-                  {p.acknowledged ? "YES" : "NO"}
-                </Text>
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                Your Passengers for {day} ({passengers.length})
               </Text>
             </View>
-          ))}
 
-          <Pressable style={styles.button} onPress={handleSubmitTimes}>
-            <Text style={styles.buttonText}>Submit Pickup Times</Text>
-          </Pressable>
+            {passengers.length > 0 ? (
+              <View style={styles.passengersList}>
+                {passengers.map((p, index) => (
+                  <View key={index} style={styles.passengerCard}>
+                    <View style={styles.passengerHeader}>
+                      <View style={styles.passengerInfo}>
+                        <Text style={styles.passengerName}>
+                          {p.fname} {p.lname}
+                        </Text>
+                        <Text style={styles.passengerPhone}>
+                          {p.phoneNumber}
+                        </Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          p.acknowledged
+                            ? styles.statusBadgeSuccess
+                            : styles.statusBadgeWarning,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.statusText,
+                            p.acknowledged
+                              ? styles.statusTextSuccess
+                              : styles.statusTextWarning,
+                          ]}
+                        >
+                          {p.acknowledged ? "Confirmed" : "Pending"}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.timeSection}>
+                      <Text style={styles.timeLabel}>Address:</Text>
+                      <Text style={styles.passengerPhone}>
+                        {p.address || "Address not provided"}
+                      </Text>
+                      <Text style={styles.addressText}></Text>
+                    </View>
+
+                    <View style={styles.timeSection}>
+                      <Text style={styles.timeLabel}>Pickup Time:</Text>
+                      <TextInput
+                        style={styles.timeInput}
+                        placeholder="Enter pickup time (e.g., 9:30 AM)"
+                        placeholderTextColor="#9ca3af"
+                        value={pickupTimes[p.phoneNumber] || ""}
+                        onChangeText={(text) =>
+                          handleTimeChange(p.phoneNumber, text)
+                        }
+                      />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyTitle}>No passengers assigned</Text>
+              </View>
+            )}
+
+            {passengers.length > 0 && (
+              <Pressable
+                style={styles.submitButton}
+                onPress={handleSubmitTimes}
+              >
+                <Text style={styles.submitButtonText}>Submit Pickup Times</Text>
+              </Pressable>
+            )}
+          </View>
         </>
       ) : (
-        // Assignment Pending State
-        <View style={styles.assignmentCard}>
-          <View style={styles.assignmentContent}>
-            <Text style={styles.assignmentTitle}>
+        <View style={styles.pendingCard}>
+          <View style={styles.pendingHeader}>
+            <Text style={styles.pendingTitle}>
               We&apos;re Organizing Rides!
             </Text>
-            <Text style={styles.assignmentText}>
-              Thanks for signing up! Car assignments haven&apos;t been released yet. Please check back later
-              for your pickup details!
-            </Text>
-            <View style={styles.scheduleInfo}>
-              <Text style={styles.scheduleTitle}>Typical Update Schedule:</Text>
-              <Text style={styles.scheduleItem}>
-                • Friday mornings at 8:00 AM
-              </Text>
-              <Text style={styles.scheduleItem}>
-                • Saturday evenings at 6:00 PM
-              </Text>
+          </View>
+
+          <Text style={styles.pendingText}>
+            Thanks for signing up as a driver! Car assignments haven&apos;t been
+            released yet. Your passengers will appear here once assignments are
+            complete.
+          </Text>
+
+          <View style={styles.scheduleCard}>
+            <Text style={styles.scheduleTitle}>Typical Update Schedule</Text>
+            <View style={styles.scheduleItems}>
+              <View style={styles.scheduleItem}>
+                <Text style={styles.scheduleItemBullet}>•</Text>
+                <Text style={styles.scheduleItemText}>
+                  Friday mornings at 8:00 AM
+                </Text>
+              </View>
+              <View style={styles.scheduleItem}>
+                <Text style={styles.scheduleItemBullet}>•</Text>
+                <Text style={styles.scheduleItemText}>
+                  Saturday evenings at 6:00 PM
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -211,7 +288,10 @@ const DriverHome = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
+  scrollContent: {
     paddingBottom: 40,
   },
   header: {
@@ -222,7 +302,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   backButton: {
     paddingVertical: 8,
@@ -246,7 +326,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   welcomeSection: {
+    alignItems: "center",
     marginBottom: 8,
+  },
+  driverBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#10b981",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  driverIcon: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  driverLabel: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
   },
   welcomeTitle: {
     fontSize: 18,
@@ -258,114 +357,247 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: "#1a1a1a",
+    textAlign: "center",
   },
-  input: {
-    borderColor: "#ccc",
+  successBanner: {
+    backgroundColor: "#dcfce7",
     borderWidth: 1,
-    padding: 8,
-    borderRadius: 6,
-    width: "100%",
-    backgroundColor: "white",
-    fontSize: 15,
-    marginTop: 4,
+    borderColor: "#86efac",
+    borderRadius: 12,
+    padding: 16,
+    margin: 20,
+    marginTop: 0,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  
-  button: {
-    backgroundColor: "black",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
+  successIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  successText: {
+    color: "#166534",
+    fontWeight: "600",
+    fontSize: 16,
+    flex: 1,
+  },
+  section: {
+    margin: 20,
+    marginTop: 0,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1a1a1a",
+  },
+  passengersList: {
+    gap: 16,
+  },
+  passengerCard: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  passengerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  passengerInitial: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  passengerInfo: {
+    flex: 1,
+  },
+  passengerName: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    marginBottom: 2,
+  },
+  passengerPhone: {
+    fontSize: 14,
+    color: "#6b7280",
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusBadgeSuccess: {
+    backgroundColor: "#dcfce7",
+  },
+  statusBadgeWarning: {
+    backgroundColor: "#fef3c7",
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  statusTextSuccess: {
+    color: "#166534",
+  },
+  statusTextWarning: {
+    color: "#92400e",
+  },
+  addressSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f9fafb",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  addressIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  addressText: {
+    fontSize: 15,
+    color: "#374151",
+    flex: 1,
+  },
+  timeSection: {
+    // Container for time input
+  },
+  timeLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  timeInput: {
+    backgroundColor: "#f9fafb",
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  emptyState: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 40,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  submitButton: {
+    backgroundColor: "#10b981",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
+    shadowColor: "#10b981",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  buttonText: {
+  submitButtonIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  submitButtonText: {
     color: "white",
     fontSize: 18,
-  },
-
-  card: {
-    backgroundColor: "#f9f9f9",
-    padding: 16,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.01,
-    shadowRadius: 5,
-    marginBottom: 16,
-    width: "100%",
-  },
-
-  cardTitle: {
-    fontSize: 18,
     fontWeight: "600",
-    marginBottom: 8,
-    color: "#444",
   },
-
-  cardText: {
-    fontSize: 15,
-    color: "#555",
-    marginBottom: 4,
-  },
-
-  submissionBanner: {
-    backgroundColor: "#e6f4ea",
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: "#28a745",
-  },
-  submissionText: {
-    color: "#2c662d",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  assignmentCard: {
-    backgroundColor: "#f0f9ff",
-    borderWidth: 1,
-    borderColor: "#bae6fd",
-    borderRadius: 16,
-    padding: 20,
-    margin: 20,
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  assignmentIcon: {
-    fontSize: 24,
-    marginRight: 16,
-    marginTop: 4,
-  },
-  assignmentContent: {
-    flex: 1,
-  },
-  assignmentTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0369a1",
-    marginBottom: 8,
-  },
-  assignmentText: {
-    fontSize: 16,
-    color: "#0c4a6e",
-    lineHeight: 22,
-    marginBottom: 16,
-  },
-  scheduleInfo: {
+  pendingCard: {
     backgroundColor: "white",
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 16,
+    margin: 20,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  pendingHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  pendingIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  pendingTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1a1a1a",
+  },
+  pendingText: {
+    fontSize: 16,
+    color: "#6b7280",
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+  scheduleCard: {
+    backgroundColor: "#f8f9fa",
+    borderRadius: 12,
+    padding: 16,
   },
   scheduleTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
-    color: "black",
-    marginBottom: 8,
+    color: "#374151",
+    marginBottom: 12,
+  },
+  scheduleItems: {
+    gap: 8,
   },
   scheduleItem: {
-    fontSize: 13,
-    color: "black",
-    marginBottom: 4,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  scheduleItemBullet: {
+    fontSize: 16,
+    color: "#6b7280",
+    marginRight: 8,
+    width: 12,
+  },
+  scheduleItemText: {
+    fontSize: 14,
+    color: "#6b7280",
+    flex: 1,
   },
 });
 

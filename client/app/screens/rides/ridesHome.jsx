@@ -142,7 +142,7 @@ const RidesHome = () => {
             style={[
               styles.primaryButton,
               !goingFriday && styles.disabledButton,
-            ]} 
+            ]}
             onPress={() => handleViewRide("Friday")}
             disabled={!goingFriday}
           >
@@ -155,12 +155,12 @@ const RidesHome = () => {
               View Friday Rides
             </Text>
           </Pressable>
-          
+
           <Pressable
             style={[
               styles.primaryButton,
               !goingSunday && styles.disabledButton,
-            ]} 
+            ]}
             onPress={() => handleViewRide("Sunday")}
             disabled={!goingSunday}
           >
