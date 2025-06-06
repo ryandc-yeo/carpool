@@ -122,7 +122,7 @@ const RidesSignUp = () => {
         },
         { merge: true }
       );
-    } else {
+    } else if (friday !== "" && role === "Passenger") {
       await setDoc(
         doc(db, "Friday Passengers", phoneNumber),
         {
@@ -155,7 +155,7 @@ const RidesSignUp = () => {
         },
         { merge: true }
       );
-    } else {
+    } else if (sunday !== "" && role === "Passenger") {
       await setDoc(
         doc(db, "Sunday Passengers", phoneNumber),
         {

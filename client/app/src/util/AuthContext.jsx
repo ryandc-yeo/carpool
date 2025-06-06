@@ -40,6 +40,37 @@ export const AuthProvider = ({ children }) => {
     }
     setPhoneNumber(phone);
     setUserData(userDoc.data());
+
+    const friDoc = await getDoc(doc(db, "Friday Passengers", phone));
+    if (!friDoc.exists()) {
+      const friDriveDoc = await getDoc(doc(db, "Friday Drivers", phone));
+      if (!friDriveDoc.exists()) {
+        setGoingFriday(false);
+      }
+      else {
+        setGoingFriday(true);
+      }
+    }
+    else {
+      setGoingFriday(true);
+    }
+
+    const sunDoc = await getDoc(doc(db, "Sunday Passengers", phone));
+    if (!sunDoc.exists()) {
+      const sunDriveDoc = await getDoc(doc(db, "Sunday Drivers", phone));
+      if (!sunDriveDoc.exists()) {
+        setGoingSunday(false);
+      }
+      else {
+        setGoingSunday(true);
+      }
+    }
+    else {
+      setGoingSunday(true);
+    }
+    // setGoingFriday(false);
+    // setGoingSunday(false);
+
     await SecureStore.setItemAsync('phoneNumber', phone);
     return true;
   };
@@ -47,6 +78,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setPhoneNumber(null);
     setUserData(null);
+    setGoingFriday(false);
+    setGoingSunday(false);
     await SecureStore.deleteItemAsync('phoneNumber');
   };
 
