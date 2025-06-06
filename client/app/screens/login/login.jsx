@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Image,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../src/util/AuthContext";
@@ -55,7 +62,13 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../../../assets/images/logo.png")}
+        style={styles.logoImage}
+        resizeMode="contain"
+      />
       <Text style={styles.title}>Welcome!</Text>
+
       <Text style={styles.subtitle}>
         To get started, enter your mobile number.
       </Text>
@@ -109,6 +122,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#666",
     lineHeight: 22,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 60,
+    backgroundColor: "transparent",
   },
   input: {
     height: 50,
