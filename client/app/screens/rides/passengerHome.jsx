@@ -247,11 +247,10 @@ const PassengerHome = () => {
           <Text style={styles.waitlistIcon}>⏳</Text>
           <View style={styles.waitlistContent}>
             <Text style={styles.waitlistTitle}>
-              You&apos;re on the Waitlist
+              You&apos;re in an Uber!
             </Text>
             <Text style={styles.waitlistText}>
-              We&apos;ll notify you if a spot opens up. Thank you for your
-              patience!
+              Please see the list of all rides to see the other passengers in your uber!
             </Text>
           </View>
         </View>
