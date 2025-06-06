@@ -165,7 +165,7 @@ const AllRidesList = () => {
         <Pressable style={styles.backButton} onPress={handleGoBack}>
           <Text style={styles.backButtonText}>← Back</Text>
         </Pressable>
-        <Text style={styles.title}>Sunday Rides</Text>
+        <Text style={styles.title}>{day} Rides</Text>
         <Text style={styles.subtitle}>All car assignments for this week</Text>
       </View>
 
@@ -241,7 +241,7 @@ const AllRidesList = () => {
             <View style={styles.carHeaderContent}>
               <Text style={styles.carTitle}>Uber {index + 1}</Text>
               <View style={styles.carTags}>
-                <View style={styles.tag}>
+                {/* <View style={styles.tag}>
                   <Text style={styles.tagText}>
                     {formatTime("regular")}
                   </Text>
@@ -250,7 +250,7 @@ const AllRidesList = () => {
                   <Text style={styles.tagText}>
                     {formatFellyDisplay("No, go back early")}
                   </Text>
-                </View>
+                </View> */}
               </View>
             </View>
           </View>
