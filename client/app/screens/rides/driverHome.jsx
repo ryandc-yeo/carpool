@@ -107,7 +107,7 @@ const DriverHome = () => {
     });
 
     for (const p of updatedPassengers) {
-      await updateDoc(doc(db, `${day} Drivers`, p.phoneNumber), {
+      await updateDoc(doc(db, `${day} Passengers`, p.phoneNumber), {
         pickupTime: p.pickupTime,
         acknowledged: false,
       });
