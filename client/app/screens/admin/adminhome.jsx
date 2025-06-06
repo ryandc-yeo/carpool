@@ -23,7 +23,20 @@ const AdminHome = () => {
             ...doc.data()
         }));
 
-        return { drivers, passengers };
+        // shuffle to avoid bias
+        const shuffleArray = (array) => {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        return { 
+            drivers: shuffleArray(drivers), 
+            passengers: shuffleArray(passengers) 
+        };
     };
 
     const assignCars = useCallback((drivers, passengers) => {
@@ -60,7 +73,6 @@ const AdminHome = () => {
             cars.push(car);
             if (unassigned.length === 0) break;
         }
-        
         return { cars, unassigned };
     }, []);
 
@@ -80,14 +92,14 @@ const AdminHome = () => {
                 ...sortByCompatibility(regular, driver)
             );
         } else {
-            // reg drivers: no-pref passengers, then regular
-            const noPref = passengers.filter(p => p.time === "no_preference");
+            // reg drivers: reg passengers, then no pref
             const regular = passengers.filter(p => p.time === "regular");
+            const noPref = passengers.filter(p => p.time === "no_preference");
             const early = passengers.filter(p => p.time === "early");
             
             groups.push(
-                ...sortByCompatibility(noPref, driver),
                 ...sortByCompatibility(regular, driver),
+                ...sortByCompatibility(noPref, driver),
                 ...sortByCompatibility(early, driver)
             );
         }
@@ -95,24 +107,33 @@ const AdminHome = () => {
         return groups.filter(group => group.length > 0);
     };
 
-    const sortByCompatibility = (passengers, driver) => {
-        // compatibility: same felly + same location to diff felly + diff location
+     const sortByCompatibility = (passengers, driver) => {
+        // same felly, no pref felly, then different felly
+        // same location + diff location
         const sameFellySameLocation = passengers.filter(p => 
             p.felly === driver.felly && p.location === driver.location
         );
         const sameFellyDiffLocation = passengers.filter(p => 
             p.felly === driver.felly && p.location !== driver.location
         );
+        const noPrefFellySameLocation = passengers.filter(p => 
+            p.felly === "No preference" && p.location === driver.location
+        );
+        const noPrefFellyDiffLocation = passengers.filter(p => 
+            p.felly === "No preference" && p.location !== driver.location
+        );
         const diffFellySameLocation = passengers.filter(p => 
-            p.felly !== driver.felly && p.location === driver.location
+            p.felly !== driver.felly && p.felly !== "No preference" && p.location === driver.location
         );
         const diffFellyDiffLocation = passengers.filter(p => 
-            p.felly !== driver.felly && p.location !== driver.location
+            p.felly !== driver.felly && p.felly !== "No preference" && p.location !== driver.location
         );
         
         return [
             sameFellySameLocation,
-            sameFellyDiffLocation, 
+            sameFellyDiffLocation,
+            noPrefFellySameLocation,
+            noPrefFellyDiffLocation,
             diffFellySameLocation,
             diffFellyDiffLocation
         ];
@@ -150,7 +171,7 @@ const AdminHome = () => {
             }
         }
 
-        // for uber passengers
+        // for uber
         for (const passenger of unassigned) {
             const passengerRef = doc(db, `${day} Passengers`, passenger.phoneNumber);
             batch.update(passengerRef, {
