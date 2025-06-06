@@ -150,7 +150,7 @@ const AdminHome = () => {
             }
         }
 
-        // clear driver assignment for unassigned passengers
+        // for uber passengers
         for (const passenger of unassigned) {
             const passengerRef = doc(db, `${day} Passengers`, passenger.phoneNumber);
             batch.update(passengerRef, {
