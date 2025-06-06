@@ -154,7 +154,11 @@ const AdminHome = () => {
         for (const passenger of unassigned) {
             const passengerRef = doc(db, `${day} Passengers`, passenger.phoneNumber);
             batch.update(passengerRef, {
-                driver: null
+                driver: {
+                    phoneNumber: "uber",
+                    fname: "Uber",
+                    lname: "Ride"
+                }
             });
         }
 

@@ -126,7 +126,7 @@ const AllRidesList = () => {
                 const passengersSnapshot = await getDocs(collection(db, `${day} Passengers`));
                 const waitlist = passengersSnapshot.docs.map(docSnap =>{
                     const data = docSnap.data(); 
-                    if (data.driver == null) {
+                    if (data.driver.phoneNumber === "uber") {
                         return {
                             id: docSnap.id,
                             ...data
